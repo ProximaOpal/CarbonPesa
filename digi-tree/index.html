@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digi Tree — Climate Investors &amp; Youth Planters</title>
+  <meta name="description" content="Digi Tree connects climate-affiliated investors with unemployed youth in universities, high schools and primary schools to plant trees across urban and rural communities." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome 6 — realistic vector icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ──────────── TOAST CONTAINER ──────────── -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- ──────────── NAV ──────────── -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <i class="fa-solid fa-tree nav-tree-icon"></i>
+      <span class="logo-text">Digi Tree</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#mission">Mission</a></li>
+      <li><a href="#workflow">Workflow</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#leaderboard">Leaders</a></li>
+      <li><a href="#organisations">Partners</a></li>
+    </ul>
+    <button class="nav-cta" id="nav-join-btn" onclick="showToast('Welcome! Joining Digi Tree…', 'success')">Join Now</button>
+  </nav>
+
+  <!-- ──────────── HERO ──────────── -->
+  <section id="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content reveal">
+      <div class="hero-badge"><i class="fa-solid fa-globe"></i> Climate Action Platform</div>
+      <h1 class="hero-title calligraphy">Digi<span class="accent">-</span>Tree</h1>
+      <p class="hero-sub">Bridging Climate Investors with Youth Tree Planters<br/>across Urban &amp; Rural Communities Worldwide</p>
+      <div class="hero-stats">
+        <div class="stat-pill"><i class="fa-solid fa-tree"></i> <span class="stat-num" data-target="142">0</span>K+ Trees</div>
+        <div class="stat-pill"><i class="fa-solid fa-users"></i> <span class="stat-num" data-target="38">0</span>K+ Youth</div>
+        <div class="stat-pill"><i class="fa-solid fa-building-columns"></i> <span class="stat-num" data-target="94">0</span>+ Investors</div>
+        <div class="stat-pill"><i class="fa-solid fa-earth-africa"></i> <span class="stat-num" data-target="61">0</span> Countries</div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showToast('Starting your planting journey!', 'success')">
+          <i class="fa-solid fa-seedling"></i> Start Planting
+        </button>
+        <button class="btn-ghost" onclick="document.getElementById('workflow').scrollIntoView({behavior:'smooth'})">
+          View Workflow <i class="fa-solid fa-arrow-down"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── MISSION ──────────── -->
+  <section id="mission" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Our Mission</h2>
+        <p class="section-sub">Connecting capital with youth energy to green our planet</p>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-card reveal" data-delay="0">
+          <div class="card-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <h3>Climate Investors</h3>
+          <p>Global &amp; local organisations fund tree-planting missions in targeted communities</p>
+        </div>
+        <div class="mission-card reveal" data-delay="100">
+          <div class="card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <h3>University Youth</h3>
+          <p>Students earn stipends, credits &amp; experience planting in urban &amp; peri-urban zones</p>
+        </div>
+        <div class="mission-card reveal" data-delay="200">
+          <div class="card-icon"><i class="fa-solid fa-school"></i></div>
+          <h3>High Schools</h3>
+          <p>Teens grow environmental stewardship with supervised roadside &amp; school plantings</p>
+        </div>
+        <div class="mission-card reveal" data-delay="300">
+          <div class="card-icon"><i class="fa-solid fa-child-reaching"></i></div>
+          <h3>Primary Schools</h3>
+          <p>Children plant in schoolyards &amp; community spaces, building lifelong green habits</p>
+        </div>
+        <div class="mission-card reveal" data-delay="400">
+          <div class="card-icon"><i class="fa-solid fa-city"></i></div>
+          <h3>Urban Areas</h3>
+          <p>Roadsides, parks, homes &amp; public spaces transformed into urban forests</p>
+        </div>
+        <div class="mission-card reveal" data-delay="500">
+          <div class="card-icon"><i class="fa-solid fa-wheat-awn"></i></div>
+          <h3>Rural Communities</h3>
+          <p>Farmlands, community land &amp; watersheds restored with native tree species</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── WORKFLOW ──────────── -->
+  <section id="workflow" class="section dark-section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title light">Full Workplan &amp; Workflow</h2>
+        <p class="section-sub light">How Digi Tree connects every stakeholder</p>
+      </div>
+      <div class="workflow-grid">
+
+        <!-- Row 1 -->
+        <div class="wf-card reveal" data-delay="0">
+          <div class="wf-icon"><i class="fa-solid fa-building-columns"></i></div>
+          <div class="wf-step">Step 01</div>
+          <h4>Investor Onboarding</h4>
+          <p>Organisations register, verify &amp; fund climate missions via secure dashboard</p>
+        </div>
+        <div class="wf-arrow reveal" data-delay="50"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="wf-card reveal" data-delay="100">
+          <div class="wf-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+          <div class="wf-step">Step 02</div>
+          <h4>Site Mapping</h4>
+          <p>AI-assisted GIS mapping identifies optimal planting locations in target communities</p>
+        </div>
+        <div class="wf-arrow reveal" data-delay="150"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="wf-card reveal" data-delay="200">
+          <div class="wf-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+          <div class="wf-step">Step 03</div>
+          <h4>Mission Creation</h4>
+          <p>Structured planting missions with species, timeline, budget &amp; impact targets</p>
+        </div>
+
+        <!-- Connector down -->
+        <div class="wf-col-span wf-down-arrow reveal" data-delay="250">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="wf-card reveal" data-delay="600">
+          <div class="wf-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="wf-step">Step 06</div>
+          <h4>Impact Verification</h4>
+          <p>Geotagged photos &amp; satellite confirm plantings; data feeds investor dashboards</p>
+        </div>
+        <div class="wf-arrow wf-arrow-left reveal" data-delay="550"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="wf-card reveal" data-delay="500">
+          <div class="wf-icon"><i class="fa-solid fa-seedling"></i></div>
+          <div class="wf-step">Step 05</div>
+          <h4>Tree Planting</h4>
+          <p>Youth execute missions — roadsides, schools, homes &amp; community green spaces</p>
+        </div>
+        <div class="wf-arrow wf-arrow-left reveal" data-delay="450"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="wf-card reveal" data-delay="400">
+          <div class="wf-icon"><i class="fa-solid fa-handshake"></i></div>
+          <div class="wf-step">Step 04</div>
+          <h4>Youth Matching</h4>
+          <p>Platform matches registered youth from schools &amp; universities to local missions</p>
+        </div>
+
+        <!-- Connector down -->
+        <div class="wf-col-span wf-down-arrow reveal" data-delay="650">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="wf-card reveal" data-delay="700">
+          <div class="wf-icon"><i class="fa-solid fa-coins"></i></div>
+          <div class="wf-step">Step 07</div>
+          <h4>Reward Distribution</h4>
+          <p>Youth earn stipends, certificates &amp; leaderboard points; schools receive grants</p>
+        </div>
+        <div class="wf-arrow reveal" data-delay="750"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="wf-card reveal" data-delay="800">
+          <div class="wf-icon"><i class="fa-solid fa-chart-bar"></i></div>
+          <div class="wf-step">Step 08</div>
+          <h4>Reporting</h4>
+          <p>Investors receive full ESG impact reports with carbon offset calculations</p>
+        </div>
+        <div class="wf-arrow reveal" data-delay="850"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="wf-card reveal" data-delay="900">
+          <div class="wf-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+          <div class="wf-step">Step 09</div>
+          <h4>Scale &amp; Repeat</h4>
+          <p>Successful missions auto-recommend expansion to new communities &amp; funders</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── EDUCATION TOGGLE ──────────── -->
+  <section id="education" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Education Hub</h2>
+        <p class="section-sub">Toggle modules to explore climate knowledge</p>
+      </div>
+      <div class="edu-toggles reveal">
+        <button class="toggle-btn active" id="toggle-climate" onclick="showEduTab('climate', this)">
+          <i class="fa-solid fa-earth-americas"></i> Climate
+        </button>
+        <button class="toggle-btn" id="toggle-weather" onclick="showEduTab('weather', this)">
+          <i class="fa-solid fa-cloud-sun"></i> Weather
+        </button>
+        <button class="toggle-btn" id="toggle-species" onclick="showEduTab('species', this)">
+          <i class="fa-solid fa-tree"></i> Tree Species
+        </button>
+      </div>
+
+      <!-- Climate Tab -->
+      <div id="edu-climate" class="edu-panel active reveal">
+        <div class="edu-grid">
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-temperature-high"></i></div>
+            <h4>Global Warming</h4>
+            <p>Earth's average temperature has risen 1.1°C since pre-industrial times. Trees absorb CO₂, cooling local microclimates by up to 4°C.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-industry"></i></div>
+            <h4>Carbon Sequestration</h4>
+            <p>A single mature tree sequesters ~21 kg of CO₂ per year. Urban forests collectively offset millions of tonnes annually.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-water"></i></div>
+            <h4>Flood Prevention</h4>
+            <p>Tree root systems absorb 10–15 times more water than bare soil, dramatically reducing urban flash flooding risk.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-paw"></i></div>
+            <h4>Biodiversity</h4>
+            <p>A single oak tree supports over 500 species. Reforestation is the most cost-effective biodiversity intervention available.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-wind"></i></div>
+            <h4>Air Quality</h4>
+            <p>Urban trees remove particulate matter, nitrogen dioxide &amp; ozone — improving respiratory health for millions in cities.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-file-contract"></i></div>
+            <h4>Paris Agreement</h4>
+            <p>Nations pledged to limit warming to 1.5°C. Planting 1 trillion trees could sequester 205 billion tonnes of carbon.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weather Tab -->
+      <div id="edu-weather" class="edu-panel reveal" style="display:none">
+        <div class="edu-grid">
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-cloud-rain"></i></div>
+            <h4>Rainfall Patterns</h4>
+            <p>Forests generate up to 50% of their own rainfall through transpiration. Deforestation disrupts regional precipitation cycles.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-wind"></i></div>
+            <h4>Wind Breaks</h4>
+            <p>Tree rows reduce wind speed by 50–70% and protect crops, soils &amp; buildings from erosive wind damage.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-snowflake"></i></div>
+            <h4>Frost Protection</h4>
+            <p>Shelterbelts create microclimates 2–5°C warmer at night, protecting crops from damaging late frosts.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-sun-plant-wilt"></i></div>
+            <h4>Drought Resilience</h4>
+            <p>Deep-rooted trees access groundwater and release moisture, moderating heat waves &amp; extending growing seasons.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+            <h4>Storm Buffering</h4>
+            <p>Coastal mangroves reduce storm surge height by up to 66%, protecting millions of coastal residents.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-city"></i></div>
+            <h4>Urban Heat Islands</h4>
+            <p>Cities with 30%+ tree canopy cover record temperatures 3–5°C lower than comparable treeless urban areas.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Species Tab -->
+      <div id="edu-species" class="edu-panel reveal" style="display:none">
+        <div class="edu-grid">
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-tree"></i></div>
+            <h4>Acacia (Africa)</h4>
+            <p>Fast-growing, drought-resistant nitrogen fixer ideal for dryland restoration. Supports savanna ecosystems across Sub-Saharan Africa.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-leaf"></i></div>
+            <h4>Moringa</h4>
+            <p>The "miracle tree" — every part is edible or medicinal. Grows in tropical/subtropical zones &amp; purifies water naturally.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-spa"></i></div>
+            <h4>Bamboo</h4>
+            <p>Fastest-growing plant on Earth. Sequesters CO₂ at 35× the rate of equivalent timber, while preventing soil erosion.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-plant-wilt"></i></div>
+            <h4>Neem (Asia/Africa)</h4>
+            <p>Hardy roadside tree with natural pesticide properties. Provides dense shade &amp; thrives in urban pollution environments.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-seedling"></i></div>
+            <h4>Oak (Temperate)</h4>
+            <p>Keystone species supporting 500+ invertebrate species. Long-lived carbon store with edible nuts for wildlife &amp; humans.</p>
+          </div>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fa-solid fa-clover"></i></div>
+            <h4>Jacaranda (Urban)</h4>
+            <p>Iconic purple-flowering shade tree perfect for city streets, schools &amp; parks across tropical &amp; subtropical climates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── LEADERBOARD ──────────── -->
+  <section id="leaderboard" class="section dark-section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title light"><i class="fa-solid fa-trophy"></i> Leaderboard</h2>
+        <p class="section-sub light">Top tree planters in the Digi Tree community</p>
+      </div>
+      <div class="lb-toggles reveal">
+        <button class="toggle-btn active" id="lb-youth-btn" onclick="showLbTab('youth', this)">
+          <i class="fa-solid fa-seedling"></i> Youth Planters
+        </button>
+        <button class="toggle-btn" id="lb-schools-btn" onclick="showLbTab('schools', this)">
+          <i class="fa-solid fa-school"></i> Schools
+        </button>
+        <button class="toggle-btn" id="lb-investors-btn" onclick="showLbTab('investors', this)">
+          <i class="fa-solid fa-briefcase"></i> Investors
+        </button>
+      </div>
+
+      <!-- Youth Leaderboard -->
+      <div id="lb-youth" class="lb-panel active">
+        <div class="lb-list">
+          <div class="lb-card reveal" data-delay="0">
+            <div class="lb-rank gold">1</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#f6d365,#fda085)">AM</div>
+            <div class="lb-info">
+              <div class="lb-name">Amara Mensah</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> University of Ghana · Accra</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:98%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">2,847</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#FFD700"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="100">
+            <div class="lb-rank silver">2</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#89f7fe,#66a6ff)">KN</div>
+            <div class="lb-info">
+              <div class="lb-name">Kavya Nair</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> IIT Bombay · Mumbai</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:84%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">2,391</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#C0C0C0"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="200">
+            <div class="lb-rank bronze">3</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">LO</div>
+            <div class="lb-info">
+              <div class="lb-name">Luca Oliveira</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> USP · São Paulo</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:76%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">2,164</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#CD7F32"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="300">
+            <div class="lb-rank">4</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#f093fb,#f5576c)">NW</div>
+            <div class="lb-info">
+              <div class="lb-name">Ngozi Wanjiku</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> UoN · Nairobi, Kenya</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:68%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">1,932</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-star" style="color:#52c41a"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="400">
+            <div class="lb-rank">5</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">JK</div>
+            <div class="lb-info">
+              <div class="lb-name">Jin-ho Kim</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> Seoul National Univ · Seoul</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:61%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">1,728</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-star" style="color:#52c41a"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schools Leaderboard -->
+      <div id="lb-schools" class="lb-panel" style="display:none">
+        <div class="lb-list">
+          <div class="lb-card reveal" data-delay="0">
+            <div class="lb-rank gold">1</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#f6d365,#fda085)">GH</div>
+            <div class="lb-info">
+              <div class="lb-name">Green Hills High School</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> Nairobi, Kenya · 420 students</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:95%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">12,400</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#FFD700"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="100">
+            <div class="lb-rank silver">2</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#89f7fe,#66a6ff)">SP</div>
+            <div class="lb-info">
+              <div class="lb-name">St. Patrick's Primary</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> Lagos, Nigeria · 680 students</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:80%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">9,870</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#C0C0C0"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="200">
+            <div class="lb-rank bronze">3</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">EC</div>
+            <div class="lb-info">
+              <div class="lb-name">Eco Champions College</div>
+              <div class="lb-detail"><i class="fa-solid fa-location-dot"></i> Cape Town, S. Africa · 310 students</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:72%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">8,230</div>
+              <div class="lb-label">trees planted</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#CD7F32"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Investors Leaderboard -->
+      <div id="lb-investors" class="lb-panel" style="display:none">
+        <div class="lb-list">
+          <div class="lb-card reveal" data-delay="0">
+            <div class="lb-rank gold">1</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#f6d365,#fda085)">UN</div>
+            <div class="lb-info">
+              <div class="lb-name">UNEP Green Fund</div>
+              <div class="lb-detail"><i class="fa-solid fa-globe"></i> United Nations · Global</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:100%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">$2.4M</div>
+              <div class="lb-label">invested</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#FFD700"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="100">
+            <div class="lb-rank silver">2</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#89f7fe,#66a6ff)">AF</div>
+            <div class="lb-info">
+              <div class="lb-name">African Dev. Bank</div>
+              <div class="lb-detail"><i class="fa-solid fa-globe"></i> AfDB · Pan-African</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:82%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">$1.9M</div>
+              <div class="lb-label">invested</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#C0C0C0"></i></div>
+          </div>
+          <div class="lb-card reveal" data-delay="200">
+            <div class="lb-rank bronze">3</div>
+            <div class="lb-avatar" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">GF</div>
+            <div class="lb-info">
+              <div class="lb-name">Green Climate Fund</div>
+              <div class="lb-detail"><i class="fa-solid fa-globe"></i> GCF · UNFCCC</div>
+              <div class="lb-bar"><div class="lb-fill" style="width:74%"></div></div>
+            </div>
+            <div class="lb-score">
+              <div class="lb-trees">$1.7M</div>
+              <div class="lb-label">invested</div>
+            </div>
+            <div class="lb-badge"><i class="fa-solid fa-medal" style="color:#CD7F32"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── ORGANISATIONS ──────────── -->
+  <section id="organisations" class="section">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">Global &amp; Local Partner Organisations</h2>
+        <p class="section-sub">Climate-affiliated investors &amp; institutions powering Digi Tree</p>
+      </div>
+      <div class="org-grid reveal">
+        <div class="org-card" onclick="showToast('UNEP — United Nations Environment Programme', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-earth-africa"></i></div><span>UNEP</span>
+        </div>
+        <div class="org-card" onclick="showToast('Green Climate Fund (GCF)', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-coins"></i></div><span>GCF</span>
+        </div>
+        <div class="org-card" onclick="showToast('World Resources Institute', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-seedling"></i></div><span>WRI</span>
+        </div>
+        <div class="org-card" onclick="showToast('African Development Bank', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-building-columns"></i></div><span>AfDB</span>
+        </div>
+        <div class="org-card" onclick="showToast('World Wildlife Fund', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-paw"></i></div><span>WWF</span>
+        </div>
+        <div class="org-card" onclick="showToast('CGIAR Research Centers', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-microscope"></i></div><span>CGIAR</span>
+        </div>
+        <div class="org-card" onclick="showToast('IUCN Global', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-handshake"></i></div><span>IUCN</span>
+        </div>
+        <div class="org-card" onclick="showToast('World Bank Climate Finance', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-landmark"></i></div><span>World Bank</span>
+        </div>
+        <div class="org-card" onclick="showToast('IRENA Renewables', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-sun"></i></div><span>IRENA</span>
+        </div>
+        <div class="org-card" onclick="showToast('African Union Commission', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-shield-halved"></i></div><span>African Union</span>
+        </div>
+        <div class="org-card" onclick="showToast('Great Green Wall Initiative', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-tree"></i></div><span>Great Green Wall</span>
+        </div>
+        <div class="org-card" onclick="showToast('Earth Observation for SDGs', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-satellite-dish"></i></div><span>GEO/SDG</span>
+        </div>
+        <div class="org-card" onclick="showToast('EU Green Deal Fund', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-leaf"></i></div><span>EU Green Deal</span>
+        </div>
+        <div class="org-card" onclick="showToast('The Nature Conservancy', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-compass"></i></div><span>TNC</span>
+        </div>
+        <div class="org-card" onclick="showToast('UNDP SDG Finance', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-lightbulb"></i></div><span>UNDP</span>
+        </div>
+        <div class="org-card" onclick="showToast('Kenya Forestry Service', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-map-pin"></i></div><span>KFS Kenya</span>
+        </div>
+        <div class="org-card" onclick="showToast('NESREA Nigeria', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-map-pin"></i></div><span>NESREA</span>
+        </div>
+        <div class="org-card" onclick="showToast('SANBI South Africa', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-map-pin"></i></div><span>SANBI</span>
+        </div>
+        <div class="org-card" onclick="showToast('MoEFCC India', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-map-pin"></i></div><span>MoEFCC India</span>
+        </div>
+        <div class="org-card" onclick="showToast('Amazon Fund Brazil', 'info')">
+          <div class="org-icon"><i class="fa-solid fa-water"></i></div><span>Amazon Fund</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── FOOTER ──────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <i class="fa-solid fa-tree" style="font-size:2rem; color:var(--green-2)"></i>
+            <span class="logo-text" style="font-size:1.8rem">Digi Tree</span>
+          </div>
+          <p>Connecting climate capital with youth action<br/>for a greener world — one tree at a time.</p>
+        </div>
+        <div class="footer-links">
+          <h5>Platform</h5>
+          <a href="#mission">Our Mission</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#education">Education</a>
+          <a href="#leaderboard">Leaderboard</a>
+        </div>
+        <div class="footer-links">
+          <h5>Connect</h5>
+          <a href="#" onclick="showToast('investors@digi-tree.org', 'info')">Investor Portal</a>
+          <a href="#" onclick="showToast('youth@digi-tree.org', 'info')">Youth Register</a>
+          <a href="#" onclick="showToast('schools@digi-tree.org', 'info')">School Program</a>
+          <a href="#" onclick="showToast('reports@digi-tree.org', 'info')">Impact Reports</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Digi Tree Platform · Growing a sustainable future</p>
+        <p><i class="fa-solid fa-earth-africa"></i> Paris Agreement Aligned · SDG 13 · SDG 15</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
