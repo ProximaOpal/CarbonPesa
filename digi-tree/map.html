@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carbon Pesa — Carbon Audit Maps</title>
+  <meta name="description" content="Carbon Pesa live carbon audit maps — NDVI analysis, satellite imaging, and real-time carbon monitoring." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <!-- Leaflet Draw -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" crossorigin="anonymous"></script>
+
+  <!-- Leaflet Heat -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-heat/0.2.0/leaflet-heat.js" crossorigin="anonymous"></script>
+
+  <!-- Leaflet MiniMap -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.css" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="map.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     GLOBAL HEADER — VIEW TOGGLE
+     ══════════════════════════════════════════════════════════ -->
+<div class="gt-header" id="gtHeader">
+  <div class="gt-left">
+    <a href="index.html" class="gt-back" title="Back to Home"><i class="fas fa-arrow-left"></i></a>
+    <span class="gt-brand">CARBON PESA</span>
+    <span class="gt-divider"></span>
+    <span class="gt-page">Carbon Audit Maps</span>
+  </div>
+
+  <div class="gt-toggle" id="gtToggle">
+    <button class="gt-tab active" id="btnAudit" data-view="audit">
+      <i class="fas fa-th-large"></i> Audit Dashboard
+    </button>
+    <button class="gt-tab" id="btnField" data-view="field">
+      <i class="fas fa-seedling"></i> Field Analysis
+    </button>
+  </div>
+
+  <div class="gt-right">
+    <button class="gt-icon-btn" id="coordsPanelBtn" title="Coordinates &amp; Drawing">
+      <i class="fas fa-crosshairs"></i>
+    </button>
+    <button class="gt-icon-btn" id="gtAlertBtn" title="Alerts">
+      <i class="fas fa-bell"></i>
+      <span class="notif-dot"></span>
+    </button>
+    <button class="gt-icon-btn" id="gtSettingsBtn" title="Settings">
+      <i class="fas fa-cog"></i>
+    </button>
+    <div class="gt-avatar">CP</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     VIEW 1 — AUDIT DASHBOARD  (FlytBase-style clone)
+     ══════════════════════════════════════════════════════════ -->
+<div class="cp-view active" id="viewAudit">
+
+  <!-- Sub-navigation bar -->
+  <div class="audit-subnav" id="auditSubnav">
+    <div class="audit-breadcrumb">
+      <span class="bc-home">Home</span>
+      <i class="fas fa-chevron-right bc-sep"></i>
+      <span class="bc-cur">Carbon Audit</span>
+    </div>
+    <div class="audit-subtabs" id="auditSubtabs">
+      <button class="asub-tab active" data-tab="map" id="stabMap">
+        <i class="fas fa-map-marked-alt"></i> Map View
+      </button>
+      <button class="asub-tab" data-tab="data" id="stabData">
+        <i class="fas fa-satellite-dish"></i> Data
+      </button>
+      <button class="asub-tab" data-tab="split" id="stabSplit">
+        <i class="fas fa-th"></i> Split Screen
+      </button>
+    </div>
+    <button class="emergency-btn" id="emergencyBtn">
+      <i class="fas fa-exclamation-triangle"></i> Send Alert
+    </button>
+  </div>
+
+  <!-- Audit main layout -->
+  <div class="audit-layout" id="auditLayout">
+
+    <!-- ── LEFT: Map + UAV cards ── -->
+    <div class="audit-left" id="auditLeft">
+
+      <!-- MAP PANEL -->
+      <div class="audit-map-panel" id="auditMapPanel">
+        <div class="amp-bar">
+          <span class="amp-title"><i class="fas fa-map"></i> Map View</span>
+          <div class="amp-tools">
+            <button class="amp-tool-btn" id="auditExpandBtn" title="Expand map"><i class="fas fa-expand-alt"></i></button>
+          </div>
+        </div>
+        <div class="audit-map-wrap" id="auditMapWrap">
+          <div id="audit-map"></div>
+
+          <!-- Zoom pulse ring (shown at zoom ≥ 16) -->
+          <div class="zoom-pulse-wrap" id="zoomPulseWrap" style="display:none">
+            <div class="pulse-ring ring-1"></div>
+            <div class="pulse-ring ring-2"></div>
+            <div class="pulse-ring ring-3"></div>
+            <div class="pulse-dot"></div>
+          </div>
+
+          <!-- Layer switcher -->
+          <div class="map-layer-switcher" id="auditLayerSwitcher">
+            <button class="mls-btn active" data-map="audit" data-layer="satellite">SAT</button>
+            <button class="mls-btn" data-map="audit" data-layer="terrain">TRN</button>
+            <button class="mls-btn" data-map="audit" data-layer="street">STR</button>
+            <button class="mls-btn" data-map="audit" data-layer="dark">DRK</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DRONE / UAV CARDS PANEL -->
+      <div class="audit-cards-panel" id="auditCardsPanel">
+        <div class="acp-toolbar">
+          <div class="acpt-left">
+            <span class="acpt-title">Audit UAVs</span>
+            <span class="online-pill"><span class="opill-dot"></span> Online</span>
+          </div>
+          <div class="acpt-right">
+            <span class="filter-label">Filter by:</span>
+            <div class="filter-tabs" id="filterTabs">
+              <button class="ftab active" data-filter="all">Global</button>
+              <button class="ftab" data-filter="offline">Offline</button>
+              <button class="ftab" data-filter="battery">Low battery</button>
+              <button class="ftab" data-filter="problems">Problems</button>
+              <button class="ftab" data-filter="live">Live feed</button>
+            </div>
+          </div>
+        </div>
+        <div class="cards-grid" id="cardsGrid">
+          <!-- injected by JS -->
+        </div>
+        <button class="add-unit-btn" id="addUnitBtn">
+          <i class="fas fa-plus"></i> Add more audit unit
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT: 2×2 Data Grid ── -->
+    <div class="audit-right" id="auditRight">
+      <div class="data-grid-2x2" id="dataGrid">
+
+        <!-- CELL 1: Telemetry -->
+        <div class="data-cell" id="cellTelemetry">
+          <div class="cell-topbar">
+            <div class="cell-status-pill online"><span class="csp-dot"></span>Online</div>
+            <button class="cell-btn" title="Expand"><i class="fas fa-expand-alt"></i></button>
+          </div>
+          <div class="telemetry-body" id="telemetryBody">
+            <div class="tele-grid">
+              <div class="tele-block">
+                <div class="tele-lbl">Confidence</div>
+                <div class="tele-val">100%</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">Humidity</div>
+                <div class="tele-val" id="tHumidity">72%</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">Latitude</div>
+                <div class="tele-val" id="tLat">-0.5023°</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">Longitude</div>
+                <div class="tele-val" id="tLng">35.4156°</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">Altitude</div>
+                <div class="tele-val" id="tAlt">120 m</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">Speed</div>
+                <div class="tele-val" id="tSpeed">8 m/s</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">Wind</div>
+                <div class="tele-val" id="tWind">NW 12km/h</div>
+              </div>
+              <div class="tele-block">
+                <div class="tele-lbl">CO₂ Level</div>
+                <div class="tele-val tele-green" id="tCO2">412 ppm</div>
+              </div>
+              <div class="tele-block wide">
+                <div class="tele-lbl">Audit Duration</div>
+                <div class="tele-val" id="tTime">28 min (14 min left)</div>
+              </div>
+              <div class="tele-block wide">
+                <div class="tele-lbl">Carbon Density</div>
+                <div class="tele-val tele-green" id="tCarbon">24.8 tCO₂e/ha</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CELL 2: NDVI Thermal Canvas -->
+        <div class="data-cell" id="cellThermal">
+          <div class="cell-topbar">
+            <div class="cell-status-pill online"><span class="csp-dot"></span>Online</div>
+            <button class="send-alert-mini-btn" id="sendAlertMini">
+              <i class="fas fa-exclamation-circle"></i> Send Alert
+            </button>
+            <button class="cell-btn" title="Expand"><i class="fas fa-expand-alt"></i></button>
+          </div>
+          <canvas id="thermalCanvas" class="thermal-canvas"></canvas>
+          <div class="thermal-label">NDVI Live — Mau Forest Zone MF-429A</div>
+        </div>
+
+        <!-- CELL 3: Satellite sub-map -->
+        <div class="data-cell" id="cellSubMap1">
+          <div class="cell-topbar">
+            <div class="cell-status-pill online"><span class="csp-dot"></span>Online</div>
+            <span class="cell-label">Satellite View</span>
+            <button class="cell-btn" title="Expand"><i class="fas fa-expand-alt"></i></button>
+          </div>
+          <div id="sub-map-1" class="sub-map-div"></div>
+        </div>
+
+        <!-- CELL 4: Terrain sub-map -->
+        <div class="data-cell" id="cellSubMap2">
+          <div class="cell-topbar">
+            <div class="cell-status-pill online"><span class="csp-dot"></span>Online</div>
+            <span class="cell-label">Terrain View</span>
+            <button class="cell-btn" title="Expand"><i class="fas fa-expand-alt"></i></button>
+          </div>
+          <div id="sub-map-2" class="sub-map-div"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div><!-- /viewAudit -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     VIEW 2 — FIELD ANALYSIS  (Crop-stress-style clone)
+     ══════════════════════════════════════════════════════════ -->
+<div class="cp-view" id="viewField">
+
+  <!-- Icon sidebar -->
+  <nav class="fa-sidebar" id="faSidebar">
+    <div class="fas-top">
+      <div class="fas-brand">CP</div>
+      <button class="fas-icon active" title="Layers"><i class="fas fa-layer-group"></i></button>
+      <button class="fas-icon" title="Fields"><i class="fas fa-leaf"></i></button>
+      <button class="fas-icon" title="Analytics"><i class="fas fa-chart-area"></i></button>
+      <button class="fas-icon" title="Carbon"><i class="fas fa-atom"></i></button>
+      <button class="fas-icon" title="Alerts"><i class="fas fa-exclamation-circle"></i></button>
+      <button class="fas-icon" title="Compare"><i class="fas fa-columns"></i></button>
+    </div>
+    <div class="fas-bottom">
+      <button class="fas-icon" title="Help"><i class="fas fa-question-circle"></i></button>
+      <button class="fas-icon" title="Profile"><i class="fas fa-user-circle"></i></button>
+    </div>
+  </nav>
+
+  <!-- Main area -->
+  <div class="fa-main" id="faMain">
+
+    <!-- Header bar -->
+    <div class="fa-header" id="faHeader">
+      <div class="fa-header-left">
+        <span class="fa-field-label">Field:</span>
+        <button class="fa-field-btn" id="faFieldBtn">
+          Mau Forest 429 <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div class="fa-header-right">
+        <button class="fa-hdr-btn" id="faSearchOpen" title="Search"><i class="fas fa-search"></i></button>
+        <button class="fa-hdr-btn" id="faMenuOpen" title="Menu"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Content row -->
+    <div class="fa-content" id="faContent">
+
+      <!-- Left panel: Stress list -->
+      <div class="fa-panel" id="faPanel">
+        <div class="fap-header">
+          <h2 class="stress-title">Carbon Stress</h2>
+          <button class="fap-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+
+        <div class="stress-meta-row">
+          <span class="sm-label">Data:</span>
+          <button class="sm-date-btn">28 Aug 2024 <i class="fas fa-chevron-down"></i></button>
+          <button class="sm-ndvi-btn">NDVI <i class="fas fa-chevron-down"></i></button>
+        </div>
+
+        <div class="stress-summary-row">
+          <span class="ss-count">8</span>
+          <span class="ss-label">stress zones detected</span>
+          <span class="ss-area">24.1 ac</span>
+        </div>
+
+        <div class="stress-sort-row">
+          <span class="sort-lbl">Sort:</span>
+          <button class="sort-btn">Priority <i class="fas fa-chevron-down"></i></button>
+        </div>
+
+        <div class="stress-list" id="stressList">
+          <!-- injected by JS -->
+        </div>
+      </div>
+
+      <!-- NDVI color scale -->
+      <div class="ndvi-scale-col" id="ndviScaleCol">
+        <canvas id="ndviScaleCanvas" width="16" height="220"></canvas>
+        <div class="nsc-labels">
+          <span>1</span><span>.63</span><span>.42</span>
+          <span>.21</span><span>0</span><span>-.41</span>
+        </div>
+        <div class="nsc-foot">Relative ▼</div>
+      </div>
+
+      <!-- Map area -->
+      <div class="fa-map-area" id="faMapArea">
+
+        <!-- Top status bar -->
+        <div class="fa-map-topbar" id="faMapTopbar">
+          <span class="fmt-scale">500 ft</span>
+          <span class="fmt-src"><i class="fas fa-globe"></i> Maps</span>
+        </div>
+
+        <!-- Leaflet field map -->
+        <div id="field-map"></div>
+
+        <!-- Stress zone popup (floating on map) -->
+        <div class="stress-popup" id="stressPopup" style="display:none">
+          <div class="sp-header">
+            <div>
+              <div class="sp-title">Carbon Stress Detected</div>
+              <div class="sp-coords" id="spCoords">-0.5023°, 35.4156°</div>
+            </div>
+            <button class="sp-close" id="spClose"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="sp-dates-row">
+            <i class="fas fa-seedling sp-leaf"></i>
+            <span id="spDates">Jul 5 – Aug 24</span>
+          </div>
+          <div class="sp-metrics-row">
+            <span class="sp-date-detail" id="spDateDetail">24 Aug 24</span>
+            <span class="sp-area-detail" id="spAreaDetail">4.5 ac</span>
+            <span class="sp-ndvi-badge">NDVI <span id="spNdvi" class="ndvi-badge-val">0.52</span></span>
+          </div>
+          <div class="sp-issue-row">
+            <i class="fas fa-layer-group sp-layer-icon"></i>
+            <button class="sp-issue-btn" id="spIssueBtn">
+              Carbon Depletion <i class="fas fa-chevron-down"></i>
+            </button>
+          </div>
+          <div class="sp-actions">
+            <button class="sp-act-btn" id="spMuteBtn">
+              <i class="fas fa-bell-slash"></i> Mute
+            </button>
+            <button class="sp-act-btn danger" id="spDeleteBtn">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Field map layer switcher -->
+        <div class="field-layer-switcher" id="fieldLayerSwitcher">
+          <button class="mls-btn active" data-map="field" data-layer="satellite">SAT</button>
+          <button class="mls-btn" data-map="field" data-layer="terrain">TRN</button>
+          <button class="mls-btn" data-map="field" data-layer="street">STR</button>
+          <button class="mls-btn" data-map="field" data-layer="dark">DRK</button>
+        </div>
+
+        <!-- Minimap thumbnail -->
+        <div class="fa-minimap-wrap" id="faMinimap">
+          <div id="field-minimap"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div><!-- /viewField -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE-IN COORDINATES / DRAW TOOL PANEL
+     ══════════════════════════════════════════════════════════ -->
+<div class="tool-panel-overlay" id="toolPanelOverlay"></div>
+<div class="tool-panel" id="toolPanel">
+  <div class="tp-header">
+    <span class="tp-title"><i class="fas fa-vector-square"></i> Coordinates &amp; Drawing</span>
+    <button class="tp-close" id="tpClose"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="tp-scroll">
+
+    <!-- Go to coordinates -->
+    <section class="tp-section">
+      <div class="tps-title"><i class="fas fa-crosshairs"></i> Go to Coordinates</div>
+      <input type="number" class="tp-input" id="gotoLat" placeholder="Latitude (e.g. -0.500)" step="0.0001" />
+      <input type="number" class="tp-input" id="gotoLng" placeholder="Longitude (e.g. 35.400)" step="0.0001" />
+      <input type="number" class="tp-input" id="gotoZoom" placeholder="Zoom level (1–20)" min="1" max="20" value="14" />
+      <button class="tp-btn primary" id="gotoBtn">
+        <i class="fas fa-location-arrow"></i> Fly to Location
+      </button>
+      <div class="tps-divider"></div>
+      <div class="tps-title"><i class="fas fa-map-pin"></i> Quick Locations</div>
+      <div class="quick-locs" id="quickLocs">
+        <button class="ql-btn" data-lat="-0.5" data-lng="35.4" data-zoom="12">Mau Forest</button>
+        <button class="ql-btn" data-lat="-1.286" data-lng="36.82" data-zoom="12">Nairobi</button>
+        <button class="ql-btn" data-lat="0.28" data-lng="34.75" data-zoom="12">Kakamega</button>
+        <button class="ql-btn" data-lat="-0.44" data-lng="36.72" data-zoom="12">Aberdare</button>
+        <button class="ql-btn" data-lat="-3.36" data-lng="36.69" data-zoom="11">Arusha</button>
+        <button class="ql-btn" data-lat="-6.17" data-lng="35.74" data-zoom="10">Dodoma</button>
+      </div>
+    </section>
+
+    <!-- Draw polygon from coordinates -->
+    <section class="tp-section">
+      <div class="tps-title"><i class="fas fa-draw-polygon"></i> Draw Polygon from Coordinates</div>
+      <div class="coord-rows" id="coordRows">
+        <!-- rows added by JS -->
+      </div>
+      <button class="tp-btn ghost" id="addCoordRowBtn">
+        <i class="fas fa-plus"></i> Add Point
+      </button>
+      <input type="text" class="tp-input" id="polyNameInput" placeholder="Zone name (e.g. Audit Zone A)" />
+      <div class="tp-btn-pair">
+        <button class="tp-btn primary" id="drawFromCoordsBtn">
+          <i class="fas fa-vector-square"></i> Draw Polygon
+        </button>
+        <button class="tp-btn ghost" id="clearCoordsBtn">
+          <i class="fas fa-trash"></i> Clear
+        </button>
+      </div>
+      <div class="poly-result-box" id="polyResultBox" style="display:none">
+        <div class="prb-row"><i class="fas fa-ruler-combined"></i> Area: <strong id="polyAreaOut">—</strong></div>
+        <div class="prb-row"><i class="fas fa-route"></i> Perimeter: <strong id="polyPerimOut">—</strong></div>
+      </div>
+    </section>
+
+    <!-- Freehand draw modes -->
+    <section class="tp-section">
+      <div class="tps-title"><i class="fas fa-pencil-alt"></i> Freehand Drawing Tools</div>
+      <div class="draw-mode-row" id="drawModeRow">
+        <button class="dm-btn active" id="dmPolygon"><i class="fas fa-draw-polygon"></i><span>Polygon</span></button>
+        <button class="dm-btn" id="dmPolyline"><i class="fas fa-route"></i><span>Polyline</span></button>
+        <button class="dm-btn" id="dmCircle"><i class="far fa-circle"></i><span>Circle</span></button>
+        <button class="dm-btn" id="dmMarker"><i class="fas fa-map-marker-alt"></i><span>Marker</span></button>
+      </div>
+      <button class="tp-btn primary green" id="startDrawBtn">
+        <i class="fas fa-play"></i> Start Drawing on Map
+      </button>
+      <button class="tp-btn ghost" id="clearAllBtn">
+        <i class="fas fa-trash-alt"></i> Clear All Drawings
+      </button>
+    </section>
+
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="mapToast" class="map-toast" style="display:none"></div>
+
+<script src="map.js"></script>
+</body>
+</html>

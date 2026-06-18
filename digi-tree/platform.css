@@ -1,0 +1,635 @@
+/* ==========================================================================
+   CARBON PESA — Platform Pages Unified Styles
+   Adapts Image 1, 2, and 3 layouts into the Carbon Pesa Theme
+   ========================================================================== */
+
+/* ── BASE & VARIABLES ── */
+:root {
+  --cp-green: #7EC843;
+  --cp-green-hover: #92D84F;
+  --cp-dark-1: #111111; /* Deepest black/grey */
+  --cp-dark-2: #1A1A1A; /* Panel bg */
+  --cp-dark-3: #222222; /* Lighter panel bg */
+  --cp-border: #333333;
+  --cp-text: #FFFFFF;
+  --cp-text-muted: #A0A0A0;
+  
+  --font-main: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--cp-dark-1);
+  color: var(--cp-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── GLOBAL NAVIGATION OVERRIDE ── */
+.platform-header {
+  height: 70px;
+  background-color: var(--cp-dark-1);
+  border-bottom: 1px solid var(--cp-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.ph-brand {
+  color: var(--cp-green);
+  font-weight: 700;
+  font-size: 20px;
+  text-decoration: none;
+  letter-spacing: 2px;
+}
+
+.ph-nav {
+  display: flex;
+  gap: 30px;
+}
+
+.ph-nav a {
+  color: var(--cp-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.ph-nav a:hover,
+.ph-nav a.active {
+  color: var(--cp-text);
+}
+
+.ph-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.ph-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--cp-green);
+  border-radius: 50%;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+
+/* ==========================================================================
+   LAYOUT 1: DASHBOARD (Based on Image 2 - Cyber Punk Split)
+   Used for: Mission, Workflow, Education
+   ========================================================================== */
+
+.layout-dash {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+/* Left Sidebar (Darker) */
+.ld-left {
+  flex: 0 0 40%;
+  background-color: var(--cp-dark-1);
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ld-greeting {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.ld-subtitle {
+  color: var(--cp-text-muted);
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+
+.ld-search {
+  background: var(--cp-dark-2);
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 50px;
+}
+
+.ld-search input {
+  background: none;
+  border: none;
+  color: var(--cp-text);
+  font-family: var(--font-main);
+  outline: none;
+  width: 100%;
+}
+
+.ld-grid-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ld-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.ld-card {
+  background: var(--cp-dark-2);
+  border-radius: 16px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  border: 1px solid var(--cp-border);
+}
+
+.ld-card:hover {
+  transform: translateY(-5px);
+  background: var(--cp-dark-3);
+  border-color: var(--cp-green);
+}
+
+.ld-card-icon {
+  font-size: 24px;
+  color: var(--cp-green);
+}
+
+.ld-card-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Right Content Area (Lighter Panel) */
+.ld-right {
+  flex: 0 0 60%;
+  background-color: var(--cp-dark-2);
+  border-top-left-radius: 30px;
+  padding: 50px;
+  overflow-y: auto;
+}
+
+.ldr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.ldr-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.ldr-desc {
+  color: var(--cp-text-muted);
+  font-size: 14px;
+  max-width: 60%;
+  margin-top: 8px;
+}
+
+.ldr-avatars {
+  display: flex;
+}
+.ldr-avatars img {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 2px solid var(--cp-dark-2);
+  margin-left: -10px;
+}
+
+.ldr-section {
+  margin-bottom: 40px;
+}
+.ldr-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--cp-text);
+}
+
+.ldr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ldr-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed var(--cp-border);
+}
+
+.ldr-checkbox {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--cp-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ldr-checkbox.checked::after {
+  content: '';
+  width: 10px; height: 10px;
+  background: var(--cp-green);
+  border-radius: 50%;
+}
+
+.ldr-item-text {
+  flex: 1;
+  font-size: 14px;
+}
+
+.ldr-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ldr-badge.approved { background: rgba(126,200,67,0.1); color: var(--cp-green); }
+.ldr-badge.progress { background: rgba(56,161,255,0.1); color: #38a1ff; }
+.ldr-badge.waiting { background: rgba(255,255,255,0.05); color: var(--cp-text-muted); }
+
+.ldr-fab {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 56px;
+  height: 56px;
+  background: var(--cp-green);
+  color: #000;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 10px 20px rgba(126,200,67,0.3);
+  cursor: pointer;
+  border: none;
+}
+
+
+/* ==========================================================================
+   LAYOUT 2: SPLIT LIST (Based on Image 1 - Shopping Cart)
+   Used for: Leaders, Partners
+   ========================================================================== */
+
+.layout-split {
+  display: flex;
+  height: calc(100vh - 70px);
+}
+
+/* Left List Area (Lighter dark) */
+.ls-left {
+  flex: 0 0 65%;
+  background-color: var(--cp-dark-2);
+  padding: 50px 80px;
+  overflow-y: auto;
+}
+
+.ls-header {
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ls-logo-mark {
+  font-weight: 900;
+  font-size: 28px;
+}
+
+.ls-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ls-row {
+  background: var(--cp-dark-3);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.ls-row-img {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: #333;
+  object-fit: cover;
+}
+
+.ls-row-info {
+  flex: 1;
+}
+.ls-row-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+.ls-row-sub {
+  font-size: 12px;
+  color: var(--cp-text-muted);
+  margin-top: 4px;
+}
+
+.ls-row-attr {
+  font-size: 14px;
+  color: var(--cp-text-muted);
+  width: 100px;
+}
+
+.ls-row-val {
+  font-size: 14px;
+  font-weight: 500;
+  width: 120px;
+  text-align: right;
+}
+
+.ls-row-action {
+  color: var(--cp-text-muted);
+  cursor: pointer;
+}
+.ls-row-action:hover { color: var(--cp-text); }
+
+.ls-footer {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 30px;
+  border-top: 1px solid var(--cp-border);
+}
+
+.ls-back {
+  color: var(--cp-text-muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+.ls-total {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Right Details Area (Darker panel with overlapping tab effect) */
+.ls-right {
+  flex: 0 0 35%;
+  background-color: var(--cp-dark-1);
+  position: relative;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.lsr-tab {
+  position: absolute;
+  left: -20px;
+  top: 100px;
+  width: 20px;
+  height: 80px;
+  background: var(--cp-dark-1);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.lsr-dot {
+  width: 4px; height: 4px; border-radius: 50%; background: var(--cp-text-muted);
+}
+.lsr-dot.active { background: var(--cp-green); }
+
+.lsr-content {
+  padding: 60px 50px;
+  flex: 1;
+}
+
+.lsr-title {
+  color: var(--cp-green);
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 50px;
+}
+
+.lsr-form-group {
+  margin-bottom: 30px;
+}
+.lsr-label {
+  font-size: 12px;
+  color: var(--cp-text-muted);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.lsr-input {
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--cp-border);
+  color: var(--cp-text);
+  padding: 10px 0;
+  font-family: var(--font-main);
+  font-size: 16px;
+  outline: none;
+}
+.lsr-input:focus {
+  border-bottom-color: var(--cp-green);
+}
+
+.lsr-button {
+  background-color: var(--cp-green);
+  color: #000;
+  border: none;
+  width: 100%;
+  padding: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+}
+.lsr-button:hover { background-color: var(--cp-green-hover); }
+
+
+/* ==========================================================================
+   LAYOUT 3: TRADING DASHBOARD (Based on Image 3)
+   Used for: Carbon Credits
+   ========================================================================== */
+
+.layout-trade {
+  background-color: #191919;
+  height: calc(100vh - 70px);
+  padding: 30px;
+  display: flex;
+  gap: 30px;
+}
+
+.lt-main {
+  flex: 1;
+  background: var(--cp-dark-2);
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.lt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+.lt-title-area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.lt-coin-icon {
+  width: 40px; height: 40px;
+  background: #333;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--cp-text);
+}
+
+.lt-title { font-size: 20px; font-weight: 500; }
+.lt-ticker { color: var(--cp-text-muted); font-size: 14px; margin-left: 8px; }
+
+.lt-price { font-size: 48px; font-weight: 300; margin-top: 15px; }
+.lt-change { color: var(--cp-green); font-size: 14px; }
+
+.lt-chart-area {
+  flex: 1;
+  border-bottom: 1px dashed var(--cp-border);
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.lt-stats {
+  display: flex;
+  gap: 50px;
+}
+
+.lt-stat-box { display: flex; flex-direction: column; gap: 5px; }
+.lt-stat-label { font-size: 12px; color: var(--cp-text-muted); }
+.lt-stat-val { font-size: 16px; font-weight: 600; }
+
+/* Right Trading Panel (Bright Green) */
+.lt-panel {
+  flex: 0 0 320px;
+  background: var(--cp-green);
+  border-radius: 20px;
+  padding: 30px;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+}
+
+.ltp-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.ltp-toggle {
+  display: flex;
+  background: rgba(0,0,0,0.1);
+  border-radius: 30px;
+  padding: 5px;
+  margin-bottom: 30px;
+}
+.ltp-toggle button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+.ltp-toggle button.active {
+  background: var(--cp-dark-1);
+  color: var(--cp-text);
+}
+
+.ltp-field {
+  margin-bottom: 25px;
+}
+.ltp-label {
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: block;
+}
+.ltp-select, .ltp-input {
+  width: 100%;
+  background: rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 15px;
+  border-radius: 8px;
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+
+.ltp-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.ltp-chip {
+  padding: 4px 10px;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ltp-action-btn {
+  background: var(--cp-dark-1);
+  color: var(--cp-text);
+  border: none;
+  padding: 20px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-main);
+  margin-top: auto;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.ltp-action-btn:hover { background: #000; }

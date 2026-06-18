@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carbon Pesa — Carbon Credits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="platform.css" />
+  
+  <!-- Add Chart.js for the carbon chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* OTP Modal Styling */
+    .auth-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+      display: none; align-items: center; justify-content: center; z-index: 5000;
+    }
+    .auth-modal {
+      background: #1A1A1A; width: 480px; border-radius: 12px; padding: 25px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5); font-family: var(--font-main);
+    }
+    .auth-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+    }
+    .auth-title { font-size: 18px; font-weight: 500; }
+    .auth-close { background: none; border: none; color: #A0A0A0; font-size: 20px; cursor: pointer; }
+    
+    .auth-section { margin-bottom: 25px; }
+    .auth-section-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .auth-section-desc { font-size: 13px; color: #A0A0A0; margin-bottom: 15px; line-height: 1.4; }
+    
+    .auth-qr-area { display: flex; gap: 20px; background: #222; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+    .auth-qr-img { width: 120px; height: 120px; background: #fff; padding: 5px; border-radius: 4px; }
+    .auth-secret-area { flex: 1; }
+    .auth-secret-label { font-size: 13px; margin-bottom: 10px; display: block; }
+    .auth-secret-input { 
+      background: #111; border: 1px solid #333; color: #fff; padding: 10px 15px; border-radius: 6px; 
+      width: 100%; font-family: monospace; font-size: 14px; margin-bottom: 10px;
+    }
+    .auth-copy-btn {
+      background: #333; border: none; color: #fff; padding: 8px 12px; border-radius: 6px; 
+      font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    
+    .auth-otp-grid { display: flex; gap: 10px; justify-content: space-between; }
+    .auth-otp-input {
+      width: 45px; height: 55px; background: #111; border: 1px solid #333; border-radius: 8px;
+      color: #fff; font-size: 24px; text-align: center; outline: none; transition: border 0.2s;
+    }
+    .auth-otp-input:focus { border-color: var(--cp-green); }
+    
+    .auth-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; }
+    .auth-btn-cancel { background: #222; border: none; color: #A0A0A0; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    .auth-btn-verify { background: var(--cp-green); border: none; color: #000; padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header class="platform-header" style="background-color: #191919; border-bottom: 1px solid #2a2a2a;">
+    <a href="index.html" class="ph-brand">CARBON PESA</a>
+    <nav class="ph-nav">
+      <a href="index.html">Home</a>
+      <a href="map.html">Audit Maps</a>
+      <a href="carbon-credits.html" class="active">Carbon Credits</a>
+      <a href="workflow.html">Workflow</a>
+      <a href="education.html">Education</a>
+      <a href="leaders.html">Leaders</a>
+      <a href="partners.html">Partners</a>
+    </nav>
+    <div class="ph-user">
+      <div class="ph-avatar">CP</div>
+    </div>
+  </header>
+
+  <main class="layout-trade">
+    <!-- Left Chart Area -->
+    <section class="lt-main">
+      <div class="lt-header">
+        <div>
+          <div class="lt-title-area">
+            <div class="lt-coin-icon"><i class="fas fa-leaf"></i></div>
+            <span class="lt-title">Verified Carbon Unit</span>
+            <span class="lt-ticker">VCU</span>
+          </div>
+          <div class="lt-price">$26,134.31 <span style="font-size:16px;">USD</span></div>
+          <div class="lt-change"><i class="fas fa-arrow-up"></i> $1,345.86 (2.4%)</div>
+        </div>
+        <div style="display:flex; gap:10px; font-size:12px; font-weight:600; color:var(--cp-text-muted);">
+          <span style="cursor:pointer; color:var(--cp-text);">1H</span>
+          <span style="cursor:pointer; color:var(--cp-green);">1D</span>
+          <span style="cursor:pointer;">1W</span>
+          <span style="cursor:pointer;">1Y</span>
+          <span style="cursor:pointer;">ALL</span>
+        </div>
+      </div>
+
+      <div class="lt-chart-area">
+        <canvas id="carbonChart"></canvas>
+      </div>
+
+      <div class="lt-stats">
+        <div class="lt-stat-box">
+          <span class="lt-stat-label">Market cap</span>
+          <span class="lt-stat-val">$1.34M USD</span>
+        </div>
+        <div class="lt-stat-box">
+          <span class="lt-stat-label">Volume (24h)</span>
+          <span class="lt-stat-val">$786.5K USD</span>
+        </div>
+        <div class="lt-stat-box">
+          <span class="lt-stat-label">Circulating supply</span>
+          <span class="lt-stat-val">586.5K VCU</span>
+        </div>
+        <div class="lt-stat-box" style="flex:1;">
+          <span class="lt-stat-label">Trading activity</span>
+          <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:12px;">
+            <span><strong style="color:var(--cp-green);">95%</strong> BUY</span>
+            <span><strong style="color:var(--cp-text-muted);">5%</strong> SELL</span>
+          </div>
+          <div style="width:100%; height:4px; background:#333; border-radius:2px; margin-top:5px; overflow:hidden;">
+            <div style="width:95%; height:100%; background:var(--cp-green);"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Trading Panel -->
+    <section class="lt-panel">
+      <h2 class="ltp-title">Make a trade</h2>
+      
+      <div class="ltp-toggle">
+        <button class="active"><i class="fas fa-arrow-down"></i> BUY</button>
+        <button>SELL</button>
+      </div>
+
+      <div class="ltp-field">
+        <label class="ltp-label">Phone Number (M-Pesa)</label>
+        <input type="text" class="ltp-input" id="phone-number" placeholder="07XX..." />
+      </div>
+
+      <div class="ltp-field">
+        <label class="ltp-label">Amount (Ksh)</label>
+        <input type="number" class="ltp-input" id="amount" value="1500" />
+        
+        <div class="ltp-chips">
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=50">50</div>
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=100">100</div>
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=500">500</div>
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=1000">1000</div>
+        </div>
+      </div>
+
+      <div id="status-indicator" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse hidden"></div>
+
+      <button class="ltp-action-btn" id="pay-btn" onclick="openAuthModal()" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <i data-lucide="shield-check" style="width:18px; height:18px;"></i> CONFIRM & PAY
+      </button>
+      <div style="text-align:center; font-size:11px; margin-top:15px; cursor:pointer;">
+        Secured by Marvel Network
+      </div>
+    </section>
+  </main>
+
+  <!-- AUTHENTICATOR MODAL -->
+  <div class="auth-overlay" id="auth-modal">
+    <div class="auth-modal">
+      <div class="auth-header">
+        <div class="auth-title">Setup authenticator app</div>
+        <button class="auth-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="auth-section">
+        <div class="auth-section-title"><i data-lucide="scan-line" style="width:16px; height:16px;"></i> Scan QR code</div>
+        <div class="auth-section-desc">Scan the QR code below or manually enter the secret key into your authenticator app.</div>
+        <div class="auth-qr-area">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=otpauth://totp/CarbonPesa?secret=JBSWY3DPEHPK3PXP" alt="QR Code" class="auth-qr-img" />
+          <div class="auth-secret-area">
+            <span class="auth-secret-label">Can't scan? Enter code manually:</span>
+            <input type="text" class="auth-secret-input" value="JBSWY3DPEHPK3PXP" readonly />
+            <button class="auth-copy-btn"><i data-lucide="copy" style="width:14px; height:14px;"></i> Copy code</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-section">
+        <div class="auth-section-title"><i data-lucide="key-round" style="width:16px; height:16px;"></i> Enter verification code</div>
+        <div class="auth-section-desc">Enter the 6-digit code on your authenticator app.</div>
+        <div class="auth-otp-grid">
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 1)" id="otp1" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 2)" id="otp2" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 3)" id="otp3" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 4)" id="otp4" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 5)" id="otp5" />
+          <input type="text" class="auth-otp-input" maxlength="1" id="otp6" />
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        <button class="auth-btn-cancel" onclick="closeAuthModal()">Cancel</button>
+        <button class="auth-btn-verify" onclick="verifyOTP()">Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="access-splash" class="fixed inset-0 bg-green-500/20 backdrop-blur-sm z-[9999] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
+    <div class="text-4xl font-black text-green-400 drop-shadow-[0_0_20px_rgba(74,222,128,0.8)]"><i data-lucide="check-circle" style="display:inline; width:48px; height:48px;"></i> ACCESS GRANTED</div>
+  </div>
+
+  <script>
+    // Initialize Chart.js
+    const ctx = document.getElementById('carbonChart').getContext('2d');
+    
+    // Generate dummy data resembling the screenshot
+    const dataPoints = [];
+    let prev = 25000;
+    for(let i=0; i<100; i++) {
+      prev += (Math.random() - 0.45) * 500;
+      dataPoints.push(prev);
+    }
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(126, 200, 67, 0.2)'); // Carbon Pesa Green fading out
+    gradient.addColorStop(1, 'rgba(126, 200, 67, 0)');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 100}, (_, i) => i),
+        datasets: [{
+          data: dataPoints,
+          borderColor: '#7EC843', // Carbon Pesa green
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: true,
+          backgroundColor: gradient,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { display: false },
+          y: { 
+            display: true,
+            position: 'right',
+            grid: { color: '#333', borderDash: [5, 5] },
+            ticks: {
+              color: '#A0A0A0',
+              callback: function(value) { return '$' + value.toLocaleString(); }
+            }
+          }
+        }
+      }
+    });
+    // M-PESA LOGIC & OTP LOGIC
+    const CONFIG = Object.freeze({
+        API_BASE_URL: "https://marvel-network.onrender.com",
+        POLL_INTERVAL_MS: 5000,
+        POLL_MAX_ATTEMPTS: 12,
+        TOAST_DURATION_MS: 5000
+    });
+
+    const API = (() => {
+        const BASE = CONFIG.API_BASE_URL;
+        const _request = async (url, options = {}) => {
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                return { ok: response.ok, status: response.status, data };
+            } catch (err) {
+                return { ok: false, error: err.message };
+            }
+        };
+        return {
+            stkPush: (phone, amount) => _request(`${BASE}/api/stk-push`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, amount: Math.floor(amount), hours: 1 }) 
+            }),
+            queryPayment: (id) => _request(`${BASE}/api/query-payment?id=${id}`)
+        };
+    })();
+
+    const TOAST = (() => {
+        const create = (title, message, type) => {
+            const toast = document.createElement('div');
+            const isSuccess = type === 'success';
+            toast.className = `fixed bottom-5 right-5 z-[3000] p-5 rounded-xl backdrop-blur-xl border-2 animate-in slide-in-from-right transition-all duration-500 ${isSuccess ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-red-500/20 border-red-500 text-red-400'}`;
+            toast.innerHTML = `<div class="flex items-center gap-4"><div><div class="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">${title}</div><div class="text-sm font-bold text-white">${message}</div></div></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, CONFIG.TOAST_DURATION_MS);
+        };
+        return { success: (t, m) => create(t, m, 'success'), error: (t, m) => create(t, m, 'error') };
+    })();
+
+    const PHONE = {
+        isValid: (raw) => /^(07|01|254|\+254)\d{8}$/.test(raw.trim()),
+        normalise: (raw) => {
+            let p = raw.trim();
+            if (p.startsWith('+')) p = p.slice(1);
+            if (p.startsWith('0')) p = '254' + p.slice(1);
+            return p;
+        }
+    };
+
+    let activePoll = null;
+
+    function openAuthModal() {
+        const phoneInput = document.getElementById('phone-number').value;
+        const amountInput = document.getElementById('amount').value;
+        if (!PHONE.isValid(phoneInput) || amountInput < 1) {
+            TOAST.error("VALIDATION_ERROR", "Invalid Phone Number or Amount.");
+            return;
+        }
+        document.getElementById('auth-modal').style.display = 'flex';
+        setTimeout(() => document.getElementById('otp1').focus(), 100);
+    }
+
+    function closeAuthModal() {
+        document.getElementById('auth-modal').style.display = 'none';
+        // reset OTP fields
+        for(let i=1; i<=6; i++) document.getElementById(`otp${i}`).value = '';
+    }
+
+    function moveToNext(input, nextFieldId) {
+        if (input.value.length === 1) {
+            const next = document.getElementById(`otp${nextFieldId + 1}`);
+            if(next) next.focus();
+        }
+    }
+
+    function verifyOTP() {
+        let code = '';
+        for(let i=1; i<=6; i++) code += document.getElementById(`otp${i}`).value;
+        
+        if(code.length !== 6) {
+            TOAST.error("VERIFICATION_ERROR", "Enter a 6-digit code.");
+            return;
+        }
+        
+        // Assume verified
+        closeAuthModal();
+        TOAST.success("AUTH_SUCCESS", "Authenticator Verified.");
+        handlePayment();
+    }
+
+    async function handlePayment() {
+        const phoneInput = document.getElementById('phone-number');
+        const amountInput = document.getElementById('amount');
+        const btn = document.getElementById('pay-btn');
+        const indicator = document.getElementById('status-indicator');
+
+        const phone = PHONE.normalise(phoneInput.value);
+        const amount = amountInput.value;
+
+        // UI State Change
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="refresh-cw" class="animate-spin" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> AUTHORIZING...`;
+        indicator.classList.remove('hidden');
+        lucide.createIcons();
+
+        const { ok, data } = await API.stkPush(phone, amount);
+
+        if (ok && data.CheckoutRequestID) {
+            TOAST.success("UPLINK_ESTABLISHED", "PIN Request sent to device.");
+            pollPayment(data.CheckoutRequestID);
+        } else {
+            TOAST.error("GATEWAY_REJECTION", data?.message || "Check connection.");
+            resetUI();
+        }
+    }
+
+    function pollPayment(checkoutID) {
+        let attempts = 0;
+        const btn = document.getElementById('pay-btn');
+
+        activePoll = setInterval(async () => {
+            attempts++;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> SYNCING (${attempts})`;
+            lucide.createIcons();
+
+            const { ok, data } = await API.queryPayment(checkoutID);
+
+            if (ok && data.status === 'paid') {
+                clearInterval(activePoll);
+                handleSuccess();
+            } else if (ok && (data.status === 'failed' || data.status === 'cancelled')) {
+                clearInterval(activePoll);
+                TOAST.error("TRANSACTION_FAILED", "User cancelled or timeout.");
+                resetUI();
+            }
+
+            if (attempts >= CONFIG.POLL_MAX_ATTEMPTS) {
+                clearInterval(activePoll);
+                TOAST.error("POLL_TIMEOUT", "No response from gateway.");
+                resetUI();
+            }
+        }, CONFIG.POLL_INTERVAL_MS);
+    }
+
+    function handleSuccess() {
+        const btn = document.getElementById('pay-btn');
+        btn.innerHTML = `<i data-lucide="check-circle" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> TRANSACTION_COMPLETE`;
+        btn.style.background = '#0ea5e9'; // cyan-500
+        
+        TOAST.success("PAYMENT_VERIFIED", "Encrypted receipt generated.");
+        
+        // Show access splash
+        const splash = document.getElementById('access-splash');
+        splash.style.opacity = '1';
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            resetUI();
+        }, 3000);
+    }
+
+    function resetUI() {
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="shield-check" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> CONFIRM & PAY`;
+        btn.style.background = '';
+        document.getElementById('status-indicator').classList.add('hidden');
+        lucide.createIcons();
+    }
+
+    // Initialize lucide
+    lucide.createIcons();
+  </script>
+</body>
+</html>
