@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const API_BASE = "http://localhost:8000";
+  let activeFarmId = 1;
 
   // ───────────────────────────────────────────────────────────────────
   // 1. TILE LAYERS & CONFIG
@@ -41,15 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const subMap1Layer = L.tileLayer(mapboxUrl, { maxZoom: 19 });
   const subMap1 = L.map('sub-map-1', { center: defaultCenter, zoom: defaultZoom - 2, zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false });
   subMap1Layer.addTo(subMap1);
-  
-  const subMap2 = L.map('sub-map-2', { center: defaultCenter, zoom: defaultZoom - 2, zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false });
-  L.tileLayer(terrainUrl, { maxZoom: 13 }).addTo(subMap2);
 
   // Sync sub-maps with main audit map
   auditMap.on('moveend', () => {
     const center = auditMap.getCenter();
     subMap1.setView(center, auditMap.getZoom() - 2);
-    subMap2.setView(center, auditMap.getZoom() - 2);
   });
 
   // Zoom pulse ring logic (show when zoom >= 16)
@@ -131,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       viewField.classList.remove('active');
       viewAudit.style.display = 'flex';
       viewField.style.display = 'none';
-      setTimeout(() => { auditMap.invalidateSize(); subMap1.invalidateSize(); subMap2.invalidateSize(); }, 100);
+      setTimeout(() => { auditMap.invalidateSize(); subMap1.invalidateSize(); }, 100);
       showToast('Switched to Audit Dashboard');
     } else {
       btnField.classList.add('active');
@@ -257,14 +254,17 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
         if (res.ok || res.status === 201) {
-          showToast('Farm Registered Successfully!');
+          const farmData = await res.json();
+          activeFarmId = farmData.id;
+          showToast(`Farm '${farmData.name}' Registered Successfully! Active ID: ${activeFarmId}`);
           closeFarmModal();
+          fetchNdviChart();
         } else {
-          showToast('Farm registration simulated successfully (Endpoint returning 404).');
+          showToast('Farm registration failed.');
           closeFarmModal();
         }
       } catch(e) {
-        showToast('Farm registration simulated successfully (API offline).');
+        showToast('Error registering farm: ' + e.message);
         closeFarmModal();
       }
     });
@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(`${API_BASE}/deforestation/alert`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({farm_id: 1})
+      body: JSON.stringify({farm_id: activeFarmId})
     }).catch(() => {});
   }
   document.getElementById('emergencyBtn').addEventListener('click', dispatchEmergencyAlert);
@@ -586,7 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('📡 NDVI anomaly alert dispatched via SMS!');
     fetch(`${API_BASE}/deforestation/alert`, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({farm_id: 1})
+      body: JSON.stringify({farm_id: activeFarmId})
     }).catch(() => {});
   });
 
@@ -603,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       const cell = btn.closest('.data-cell');
       cell.classList.toggle('cell-expanded');
-      [subMap1, subMap2].forEach(m => { try { m.invalidateSize(); } catch(e) {} });
+      [subMap1].forEach(m => { try { m.invalidateSize(); } catch(e) {} });
     });
   });
 
@@ -965,7 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`${API_BASE}/deforestation/alert`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({farm_id: 1})
+          body: JSON.stringify({farm_id: activeFarmId})
         })
         .then(r => r.json())
         .then(res => showToast(`Deforestation Alert! Canopy loss detected. ${res.status}`))
@@ -975,7 +975,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function fetchNdviChart() {
-    fetch(`${API_BASE}/gee/timeseries/1`)
+    fetch(`${API_BASE}/gee/timeseries/${activeFarmId}`)
       .then(r => r.json())
       .then(ts => buildNdviChart(ts.labels, ts.data))
       .catch(err => {
@@ -1035,7 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        const res = await fetch(`${API_BASE}/audit/1`, { method: 'POST' });
+        const res = await fetch(`${API_BASE}/audit/${activeFarmId}`, { method: 'POST' });
         const data = await res.json();
         if (zoomPulse) zoomPulse.style.display = 'none';
 
@@ -1067,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnDownloadReport.addEventListener('click', async () => {
       showToast('Generating Hedera-anchored PDF manifest...');
       try {
-        const res = await fetch(`${API_BASE}/pdd/generate`);
+        const res = await fetch(`${API_BASE}/pdd/generate?farm_id=${activeFarmId}`);
         if (!res.ok) throw new Error('Failed to generate PDD');
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
@@ -1242,9 +1242,24 @@ document.addEventListener('DOMContentLoaded', () => {
           fillOpacity: 0.1
         },
         onEachFeature: function (feature, layer) {
+          layer.on('click', () => {
+            if (feature.properties && feature.properties.farm_id) {
+              activeFarmId = feature.properties.farm_id;
+              showToast(`Selected Farm: ${feature.properties.name || ('ID ' + activeFarmId)}`);
+              fetchNdviChart();
+            }
+          });
           drawnItemsAudit.addLayer(layer);
+          
           const clonedLayer = L.geoJSON(feature, {
             style: { color: '#7EC843', weight: 2, fillOpacity: 0.1 }
+          });
+          clonedLayer.on('click', () => {
+            if (feature.properties && feature.properties.farm_id) {
+              activeFarmId = feature.properties.farm_id;
+              showToast(`Selected Farm: ${feature.properties.name || ('ID ' + activeFarmId)}`);
+              fetchNdviChart();
+            }
           });
           drawnItemsField.addLayer(clonedLayer);
         }

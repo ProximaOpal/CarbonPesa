@@ -21,16 +21,18 @@ files_to_gather = [
     ('backend', 'main.py'),
     ('backend', 'database.py'),
     ('backend', 'models.py'),
+    ('backend', 'schemas.py'),
     ('backend/services', '__init__.py'),
     ('backend/services', 'gee_service.py'),
     ('backend/services', 'at_service.py'),
     ('backend/services', 'dmrv_ai.py'),
     ('backend/services', 'daraja_service.py'),
     ('backend/services', 'hedera_service.py'),
-    # Artifacts (Tasks, Plans, Walkthroughs)
-    ('C:/Users/grvns/.gemini/antigravity/brain/a8f8417b-9d1e-4695-b6bc-489397db81ac', 'task.md'),
-    ('C:/Users/grvns/.gemini/antigravity/brain/a8f8417b-9d1e-4695-b6bc-489397db81ac', 'implementation_plan.md'),
-    ('C:/Users/grvns/.gemini/antigravity/brain/a8f8417b-9d1e-4695-b6bc-489397db81ac', 'walkthrough.md'),
+    # Tests
+    ('', 'test_live_flow.py'),
+    # Artifacts (Tasks, Plans, Walkthroughs) — current session
+    ('C:/Users/grvns/.gemini/antigravity-ide/brain/49fc589e-7126-4be8-9c40-4760de8606b1', 'task.md'),
+    ('C:/Users/grvns/.gemini/antigravity-ide/brain/49fc589e-7126-4be8-9c40-4760de8606b1', 'implementation_plan.md'),
 ]
 
 with open('full_codebase.txt', 'w', encoding='utf-8') as outfile:

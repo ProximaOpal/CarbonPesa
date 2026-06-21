@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
 from .database import engine, get_db, SessionLocal, USING_SQLITE
-from . import models
+from . import models, schemas
 
 if USING_SQLITE:
     def from_shape(shape_obj, srid=4326):
@@ -165,31 +165,30 @@ async def ussd_callback(request: Request, db: Session = Depends(get_db)):
     return JSONResponse(content=response_text, media_type="text/plain")
 
 # ── FARM REGISTRATION ─────────────────────────────────────────────────
-@app.post("/farms", tags=["Farms"])
-def register_farm(farmer_id: str, area_hectares: float, geojson_polygon: str, db: Session = Depends(get_db)):
+@app.post("/farms", response_model=schemas.FarmResponse, tags=["Farms"])
+def register_farm(payload: schemas.FarmCreate, db: Session = Depends(get_db)):
     """
     Register a new farm with its PostGIS polygon boundary (WGS84 EPSG:4326).
-    geojson_polygon should be a GeoJSON Polygon geometry string.
     """
     from shapely.geometry import shape
-    import json
 
     try:
-        geom = shape(json.loads(geojson_polygon))
+        geom = shape(payload.geometry)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid GeoJSON polygon.")
 
     farm = models.Farm(
-        farmer_id=farmer_id,
+        name=payload.name,
+        farmer_id=payload.farmer_id,
         boundary=from_shape(geom, srid=4326),
-        area_hectares=area_hectares
+        area_hectares=payload.area_ha
     )
     db.add(farm)
     db.commit()
     db.refresh(farm)
-    return {"farm_id": farm.id, "farmer_id": farmer_id, "area_hectares": area_hectares}
+    return farm
 
-@app.get("/farms", tags=["Farms"])
+@app.get("/farms", response_model=schemas.FarmFeatureCollection, tags=["Farms"])
 def get_all_farms(db: Session = Depends(get_db)):
     """Returns all registered farm boundaries as a FeatureCollection."""
     from shapely.geometry import mapping
@@ -203,6 +202,7 @@ def get_all_farms(db: Session = Depends(get_db)):
             "geometry": mapping(geom),
             "properties": {
                 "farm_id": farm.id,
+                "name": farm.name,
                 "farmer_id": farm.farmer_id,
                 "area_hectares": farm.area_hectares
             }
@@ -216,7 +216,6 @@ def get_farm_geojson(farm_id: int, db: Session = Depends(get_db)):
     Returns a farm boundary as GeoJSON — consumed directly by the Leaflet map frontend.
     """
     from shapely.geometry import mapping
-    import json
 
     farm = db.query(models.Farm).filter(models.Farm.id == farm_id).first()
     if not farm:
@@ -228,6 +227,7 @@ def get_farm_geojson(farm_id: int, db: Session = Depends(get_db)):
         "geometry": mapping(geom),
         "properties": {
             "farm_id": farm.id,
+            "name": farm.name,
             "farmer_id": farm.farmer_id,
             "area_hectares": farm.area_hectares
         }

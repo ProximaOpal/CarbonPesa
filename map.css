@@ -495,7 +495,7 @@ html, body {
 /* ═══════════════════════════════════════════════════════════════
    VIEW 2: FIELD ANALYSIS
    ═══════════════════════════════════════════════════════════════ */
-#viewField { flex-direction: row; }
+#viewField.active { flex-direction: row; }
 
 .fa-sidebar {
   width: 60px;

@@ -19,6 +19,7 @@ class Farm(Base):
     __tablename__ = "farms"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True, nullable=True)
     farmer_id = Column(String, index=True)
     # WGS84 EPSG:4326 — stored as PostGIS Geometry in prod, WKT Text in dev
     boundary = Column(_GeomType if USING_SQLITE else _GeomType('POLYGON', srid=4326))
