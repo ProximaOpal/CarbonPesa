@@ -540,6 +540,15 @@ html, body {
   border-right: 1px solid var(--panel-border);
   display: flex; flex-direction: column;
 }
+.fa-subpanel {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.fa-subpanel.active {
+  display: flex;
+}
 .fap-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
 .stress-title { font-size: 18px; font-weight: 600; }
 .fap-menu-btn { background: none; border: none; color: var(--white-70); cursor: pointer; }
