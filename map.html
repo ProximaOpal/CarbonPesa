@@ -318,8 +318,28 @@
           <button class="sort-btn">Priority <i class="fas fa-chevron-down"></i></button>
         </div>
 
+        <!-- ── NEW: NDVI TIME-SERIES CHART ── -->
+        <div class="ndvi-chart-container" style="padding: 10px; height: 140px; margin-bottom: 10px; border-bottom: 1px solid #333;">
+          <canvas id="ndviTimeSeriesChart"></canvas>
+        </div>
+
         <div class="stress-list" id="stressList">
           <!-- injected by JS -->
+        </div>
+
+        <!-- ── NEW: FIELD ACTIONS ── -->
+        <div class="field-actions" style="margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; border: 1px solid #333;">
+          <h3 style="color: #fff; margin-bottom: 10px; font-size: 14px;"><i class="fas fa-tasks"></i> Field Actions</h3>
+          <input type="file" id="cnnPhotoInput" style="display: none;" accept="image/*" />
+          <button class="tp-btn primary green" id="btnPlantVerify" style="width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="fas fa-camera"></i> Plant & Verify (CNN)
+          </button>
+          <button class="tp-btn primary" id="btnRunAudit" style="width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #38a1ff; color: #fff;">
+            <i class="fas fa-satellite"></i> Run Audit & Payout
+          </button>
+          <button class="tp-btn ghost" id="btnDownloadReport" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; color: #a0a0a0; border: 1px solid #444;">
+            <i class="fas fa-download"></i> Download Report
+          </button>
         </div>
       </div>
 

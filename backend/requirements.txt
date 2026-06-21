@@ -1,0 +1,11 @@
+fastapi==0.109.2
+uvicorn==0.27.1
+SQLAlchemy==2.0.25
+GeoAlchemy2==0.14.3
+psycopg2-binary==2.9.9
+earthengine-api==0.1.388
+scikit-learn==1.4.0
+africastalking==1.4.4
+requests==2.31.0
+python-dotenv==1.0.1
+pydantic==2.6.1

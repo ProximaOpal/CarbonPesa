@@ -84,8 +84,8 @@
             <span class="lt-title">Verified Carbon Unit</span>
             <span class="lt-ticker">VCU</span>
           </div>
-          <div class="lt-price">$26,134.31 <span style="font-size:16px;">USD</span></div>
-          <div class="lt-change"><i class="fas fa-arrow-up"></i> $1,345.86 (2.4%)</div>
+          <div class="lt-price" id="livePriceDisplay">$24.80 <span style="font-size:16px;">USD</span></div>
+          <div class="lt-change" id="livePriceChange"><i class="fas fa-arrow-up"></i> $0.00 (0.0%)</div>
         </div>
         <div style="display:flex; gap:10px; font-size:12px; font-weight:600; color:var(--cp-text-muted);">
           <span style="cursor:pointer; color:var(--cp-text);">1H</span>
@@ -258,6 +258,35 @@
         }
       }
     });
+
+    // ── LIVE PRICE FEED (CBL Carbon Exchange via Backend) ──
+    const priceDisplay = document.getElementById('livePriceDisplay');
+    const changeDisplay = document.getElementById('livePriceChange');
+    let lastPrice = 24.80;
+    
+    function fetchLivePrice() {
+      fetch("http://localhost:8000/stats/dashboard")
+        .then(res => res.json())
+        .then(data => {
+          const currentPrice = data.spot_price_usd;
+          priceDisplay.innerHTML = `$${currentPrice.toFixed(2)} <span style="font-size:16px;">USD</span>`;
+          
+          const change = currentPrice - lastPrice;
+          const pctChange = (change / lastPrice) * 100;
+          
+          if (change >= 0) {
+            changeDisplay.style.color = '#7EC843';
+            changeDisplay.innerHTML = `<i class="fas fa-arrow-up"></i> $${Math.abs(change).toFixed(2)} (${pctChange.toFixed(2)}%)`;
+          } else {
+            changeDisplay.style.color = '#ff4d4d';
+            changeDisplay.innerHTML = `<i class="fas fa-arrow-down"></i> $${Math.abs(change).toFixed(2)} (${Math.abs(pctChange).toFixed(2)}%)`;
+          }
+          lastPrice = currentPrice;
+        }).catch(console.error);
+    }
+    
+    fetchLivePrice();
+    setInterval(fetchLivePrice, 5000);
     // M-PESA LOGIC & OTP LOGIC
     const CONFIG = Object.freeze({
         API_BASE_URL: "https://marvel-network.onrender.com",

@@ -17,7 +17,7 @@ const slides = [
     number  : '01.',
     heading : 'MISSION',
     body    : 'Carbon Pesa bridges global climate capital with youth-powered tree planting. Every investment funds verified missions executed by university students, high-schoolers and rural communities.',
-    body2   : 'From funding to satellite verification to M-Pesa payouts — the full impact cycle in under 90 days.',
+    body2   : 'From funding to satellite verification to M-Pesa payouts — the full impact cycle in 48-72 hours.',
   },
   {
     number  : '02.',
@@ -34,8 +34,8 @@ const slides = [
   {
     number  : '04.',
     heading : 'CARBON',
-    body    : 'Real-time agricultural carbon mapping powered by AI satellite audits at 94.7% accuracy. Buy or sell verified carbon credits on a transparent marketplace trusted by global institutions.',
-    body2   : '2,847 ha under satellite coverage · 18.3 t CO₂ absorbed this hour · $24.80 / tCO₂e.',
+    body    : 'Real-time agricultural carbon mapping powered by AI satellite audits with an Audit Uncertainty of ±2.9%. Buy or sell verified carbon credits on a transparent marketplace trusted by global institutions.',
+    body2   : 'MRV Cost: <$0.40 per hectare per year · Farmer Revenue: 88% · $24.80 / tCO₂e.',
   },
   {
     number  : '05.',
@@ -56,24 +56,28 @@ window.addEventListener('load', () => {
 
 // ── ANIMATED STAT COUNTERS ─────────────────────────
 function animateCounters() {
-  document.querySelectorAll('.stat-val').forEach(el => {
-    const target = parseInt(el.dataset.target, 10);
-    const duration = 1800;
-    const start = performance.now();
+  const odoCarbon = document.getElementById('odoCarbon');
+  const odoPayout = document.getElementById('odoPayout');
 
-    function tick(now) {
-      const elapsed  = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // ease-out cubic
-      const eased    = 1 - Math.pow(1 - progress, 3);
-      el.textContent = Math.floor(eased * target);
-      if (progress < 1) requestAnimationFrame(tick);
-      else el.textContent = target;
-    }
+  if (odoCarbon && odoPayout) {
+    // Initial fetch
+    fetch("http://localhost:8000/stats/dashboard")
+      .then(res => res.json())
+      .then(data => {
+        odoCarbon.innerHTML = data.total_tco2e_sequestered;
+        odoPayout.innerHTML = data.total_usd_flowing;
+      }).catch(console.error);
 
-    // Delay slightly so user sees animation after page paints
-    setTimeout(() => requestAnimationFrame(tick), 700);
-  });
+    // Live polling every 10 seconds
+    setInterval(() => {
+      fetch("http://localhost:8000/stats/dashboard")
+        .then(res => res.json())
+        .then(data => {
+          odoCarbon.innerHTML = data.total_tco2e_sequestered;
+          odoPayout.innerHTML = data.total_usd_flowing;
+        }).catch(console.error);
+    }, 10000);
+  }
 }
 
 // ── SEARCH OVERLAY ────────────────────────────────

@@ -10,6 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-minimal.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/odometer.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -73,26 +75,18 @@
           </p>
 
           <!-- Stats row -->
-          <div class="stats-row" id="statsRow">
-            <div class="stat-item">
-              <span class="stat-val" data-target="142">0</span>
-              <span class="stat-unit">K+</span>
-              <span class="stat-lbl">Trees</span>
+          <div class="stats-row" id="statsRow" style="display: flex; gap: 40px;">
+            <div class="stat-item" style="text-align: left;">
+              <div style="font-size: 32px; font-weight: 700; display: flex; align-items: baseline; gap: 4px;">
+                <span class="odometer" id="odoCarbon">0</span>
+              </div>
+              <span class="stat-lbl" style="font-size: 14px; letter-spacing: 1px;">Total tCO₂e Sequestered</span>
             </div>
-            <div class="stat-item">
-              <span class="stat-val" data-target="38">0</span>
-              <span class="stat-unit">K+</span>
-              <span class="stat-lbl">Youth</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-val" data-target="94">0</span>
-              <span class="stat-unit">+</span>
-              <span class="stat-lbl">Investors</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-val" data-target="61">0</span>
-              <span class="stat-unit"></span>
-              <span class="stat-lbl">Countries</span>
+            <div class="stat-item" style="text-align: left;">
+              <div style="font-size: 32px; font-weight: 700; display: flex; align-items: baseline; gap: 4px;">
+                <span style="font-size: 24px;">$</span><span class="odometer" id="odoPayout">0</span>
+              </div>
+              <span class="stat-lbl" style="font-size: 14px; letter-spacing: 1px;">USD Flowing to Rural Families</span>
             </div>
           </div>
 
@@ -120,7 +114,7 @@
           </p>
           <p class="feat-body" id="featBody2">
             From funding to satellite verification to M-Pesa payouts —
-            the full impact cycle in under 90 days.
+            the full impact cycle in 48-72 hours.
           </p>
         </div>
       </div>
