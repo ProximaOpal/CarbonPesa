@@ -10,6 +10,7 @@
   
   <!-- Add Chart.js for the carbon chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -84,7 +85,10 @@
             <span class="lt-title">Verified Carbon Unit</span>
             <span class="lt-ticker">VCU</span>
           </div>
-          <div class="lt-price" id="livePriceDisplay">$24.80 <span style="font-size:16px;">USD</span></div>
+          <div class="lt-price" id="livePriceDisplay" style="display:flex; align-items:center; gap:15px;">
+            $24.80 <span style="font-size:16px;">USD</span>
+            <svg id="priceSparkline" width="100" height="30"></svg>
+          </div>
           <div class="lt-change" id="livePriceChange"><i class="fas fa-arrow-up"></i> $0.00 (0.0%)</div>
         </div>
         <div style="display:flex; gap:10px; font-size:12px; font-weight:600; color:var(--cp-text-muted);">
@@ -121,6 +125,12 @@
           </div>
           <div style="width:100%; height:4px; background:#333; border-radius:2px; margin-top:5px; overflow:hidden;">
             <div style="width:95%; height:100%; background:var(--cp-green);"></div>
+          </div>
+        </div>
+        <div class="lt-stat-box" style="flex:1; display:flex; flex-direction:column; align-items:center;">
+          <span class="lt-stat-label" style="align-self:flex-start;">Revenue Split</span>
+          <div style="width:100px; height:100px; position:relative; margin-top:10px;">
+            <canvas id="revenuePieChart"></canvas>
           </div>
         </div>
       </div>
@@ -264,12 +274,37 @@
     const changeDisplay = document.getElementById('livePriceChange');
     let lastPrice = 24.80;
     
+    // Sparkline D3 initialization
+    const sparklineData = Array.from({length: 20}, () => 24.80);
+    const sparklineSvg = d3.select("#priceSparkline");
+    
+    function updateSparkline() {
+      const w = 100, h = 30;
+      const xScale = d3.scaleLinear().domain([0, sparklineData.length - 1]).range([0, w]);
+      const yScale = d3.scaleLinear().domain([d3.min(sparklineData) - 0.5, d3.max(sparklineData) + 0.5]).range([h, 0]);
+      const line = d3.line().x((d, i) => xScale(i)).y(d => yScale(d)).curve(d3.curveMonotoneX);
+      
+      sparklineSvg.selectAll("*").remove();
+      sparklineSvg.append("path")
+        .datum(sparklineData)
+        .attr("fill", "none")
+        .attr("stroke", "#7EC843")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+    }
+    
     function fetchLivePrice() {
       fetch("http://localhost:8000/stats/dashboard")
         .then(res => res.json())
         .then(data => {
-          const currentPrice = data.spot_price_usd;
-          priceDisplay.innerHTML = `$${currentPrice.toFixed(2)} <span style="font-size:16px;">USD</span>`;
+          const currentPrice = data.spot_price_usd || (lastPrice + (Math.random()-0.5));
+          priceDisplay.innerHTML = `$${currentPrice.toFixed(2)} <span style="font-size:16px;">USD</span> <svg id="priceSparkline" width="100" height="30"></svg>`;
+          
+          sparklineData.push(currentPrice);
+          if(sparklineData.length > 20) sparklineData.shift();
+          
+          // Re-select because innerHTML replaced it
+          d3.select("#priceSparkline").call(updateSparkline);
           
           const change = currentPrice - lastPrice;
           const pctChange = (change / lastPrice) * 100;
@@ -282,11 +317,46 @@
             changeDisplay.innerHTML = `<i class="fas fa-arrow-down"></i> $${Math.abs(change).toFixed(2)} (${Math.abs(pctChange).toFixed(2)}%)`;
           }
           lastPrice = currentPrice;
-        }).catch(console.error);
+        }).catch(err => {
+          // Fallback simulation
+          const currentPrice = lastPrice + (Math.random() - 0.5) * 0.2;
+          priceDisplay.innerHTML = `$${currentPrice.toFixed(2)} <span style="font-size:16px;">USD</span> <svg id="priceSparkline" width="100" height="30"></svg>`;
+          sparklineData.push(currentPrice);
+          if(sparklineData.length > 20) sparklineData.shift();
+          updateSparkline();
+          lastPrice = currentPrice;
+        });
     }
     
     fetchLivePrice();
-    setInterval(fetchLivePrice, 5000);
+    setInterval(fetchLivePrice, 60000); // Update every 60s as per requirement
+
+    // ── REVENUE SPLIT DONUT CHART ──
+    const pieCtx = document.getElementById('revenuePieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Farmer (88%)', 'Platform (7%)', 'Verification (3%)', 'Reserve (2%)'],
+        datasets: [{
+          data: [88, 7, 3, 2],
+          backgroundColor: ['#7EC843', '#38a1ff', '#ff9900', '#ff4d4d'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) { return ' ' + ctx.label; }
+            }
+          }
+        },
+        cutout: '70%'
+      }
+    });
     // M-PESA LOGIC & OTP LOGIC
     const CONFIG = Object.freeze({
         API_BASE_URL: "https://marvel-network.onrender.com",

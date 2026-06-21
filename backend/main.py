@@ -189,6 +189,26 @@ def register_farm(farmer_id: str, area_hectares: float, geojson_polygon: str, db
     db.refresh(farm)
     return {"farm_id": farm.id, "farmer_id": farmer_id, "area_hectares": area_hectares}
 
+@app.get("/farms", tags=["Farms"])
+def get_all_farms(db: Session = Depends(get_db)):
+    """Returns all registered farm boundaries as a FeatureCollection."""
+    from shapely.geometry import mapping
+    
+    farms = db.query(models.Farm).all()
+    features = []
+    for farm in farms:
+        geom = to_shape(farm.boundary)
+        features.append({
+            "type": "Feature",
+            "geometry": mapping(geom),
+            "properties": {
+                "farm_id": farm.id,
+                "farmer_id": farm.farmer_id,
+                "area_hectares": farm.area_hectares
+            }
+        })
+    return {"type": "FeatureCollection", "features": features}
+
 # ── FARM GEOJSON EXPORT (for Leaflet frontend) ───────────────────────
 @app.get("/farms/{farm_id}/geojson", tags=["Farms"])
 def get_farm_geojson(farm_id: int, db: Session = Depends(get_db)):
@@ -291,6 +311,22 @@ def trigger_audit(farm_id: int, db: Session = Depends(get_db)):
         "daraja_receipt": receipt,
         "methodology": "VM0047 v1.1 / IPCC Tier 2"
     }
+
+@app.get("/audits", tags=["Layer 2-5 — Full Audit Pipeline"])
+def get_audits(db: Session = Depends(get_db)):
+    """Returns all past audits."""
+    audits = db.query(models.Audit).order_by(models.Audit.id.desc()).all()
+    return [
+        {
+            "id": a.id,
+            "farm_id": a.farm_id,
+            "ndvi_score": a.ndvi_score,
+            "carbon_yield_tons": a.carbon_yield_tons,
+            "timestamp": a.timestamp.isoformat() + "Z" if a.timestamp else None,
+            "hash_manifest": a.hash_manifest
+        }
+        for a in audits
+    ]
 
 # ── DASHBOARD STATS ───────────────────────────────────────────────────
 import random
@@ -427,6 +463,21 @@ async def b2c_result(request: Request, db: Session = Depends(get_db)):
 async def b2c_timeout(request: Request):
     """Daraja B2C timeout callback."""
     return {"ResultCode": 0, "ResultDesc": "Accepted"}
+
+@app.get("/payouts", tags=["Layer 5 — M-Pesa"])
+def get_payouts(db: Session = Depends(get_db)):
+    """Returns recent Daraja B2C payouts."""
+    payouts = db.query(models.Payout).order_by(models.Payout.id.desc()).all()
+    return [
+        {
+            "id": p.id,
+            "amount": p.amount,
+            "status": p.status,
+            "daraja_receipt": p.daraja_receipt,
+            "timestamp": p.timestamp.isoformat() + "Z" if p.timestamp else None
+        }
+        for p in payouts
+    ]
 
 
 # ── SPECIES CLASSIFIER CNN (Mock) ─────────────────────────────────────

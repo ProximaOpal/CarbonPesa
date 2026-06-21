@@ -11,6 +11,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -27,6 +30,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="map.css" />
+  <style>
+    .search-item {
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #ccc;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+    }
+    .search-item:hover {
+      background: #333;
+      color: #fff;
+    }
+    .search-item:last-child {
+      border-bottom: none;
+    }
+    /* Simple spinner animation */
+    .fa-spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
 
@@ -51,6 +73,14 @@
   </div>
 
   <div class="gt-right">
+    <div class="global-search-container" style="position:relative; display:flex; align-items:center; background:#222; border-radius:4px; padding:0 10px; margin-right:15px; border:1px solid #333;">
+      <i class="fas fa-search" id="globalSearchIcon" style="color:#a0a0a0; font-size:12px; transition: color 0.2s;"></i>
+      <input type="text" id="globalSearch" placeholder="Search locations worldwide..." autocomplete="off" style="background:transparent; border:none; color:#fff; padding:6px 10px; font-family:Outfit; font-size:13px; width:220px; outline:none;" />
+      <!-- Autocomplete Dropdown -->
+      <div id="searchDropdown" style="display:none; position:absolute; top:calc(100% + 5px); left:0; width:100%; background:#222; border:1px solid #333; border-radius:4px; z-index:1000; max-height:200px; overflow-y:auto; box-shadow:0 4px 6px rgba(0,0,0,0.5);">
+        <!-- JS will inject results here -->
+      </div>
+    </div>
     <button class="gt-icon-btn" id="coordsPanelBtn" title="Coordinates &amp; Drawing">
       <i class="fas fa-crosshairs"></i>
     </button>
@@ -235,14 +265,16 @@
           <div id="sub-map-1" class="sub-map-div"></div>
         </div>
 
-        <!-- CELL 4: Terrain sub-map -->
-        <div class="data-cell" id="cellSubMap2">
+        <!-- CELL 4: Carbon Yield Chart -->
+        <div class="data-cell" id="cellYieldChart">
           <div class="cell-topbar">
             <div class="cell-status-pill online"><span class="csp-dot"></span>Online</div>
-            <span class="cell-label">Terrain View</span>
+            <span class="cell-label">Carbon Yield vs Baseline</span>
             <button class="cell-btn" title="Expand"><i class="fas fa-expand-alt"></i></button>
           </div>
-          <div id="sub-map-2" class="sub-map-div"></div>
+          <div style="padding:10px; height:calc(100% - 30px);">
+            <canvas id="carbonYieldChart"></canvas>
+          </div>
         </div>
 
       </div>
@@ -294,52 +326,77 @@
     <!-- Content row -->
     <div class="fa-content" id="faContent">
 
-      <!-- Left panel: Stress list -->
+      <!-- Left panel container -->
       <div class="fa-panel" id="faPanel">
-        <div class="fap-header">
-          <h2 class="stress-title">Carbon Stress</h2>
-          <button class="fap-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+        <!-- PANEL 1: STRESS -->
+        <div id="panelStress" class="fa-subpanel active">
+          <div class="fap-header">
+            <h2 class="stress-title">Carbon Stress</h2>
+            <button class="fap-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+          </div>
+
+          <div class="stress-meta-row">
+            <span class="sm-label">Data:</span>
+            <button class="sm-date-btn">28 Aug 2024 <i class="fas fa-chevron-down"></i></button>
+            <button class="sm-ndvi-btn">NDVI <i class="fas fa-chevron-down"></i></button>
+          </div>
+
+          <div class="stress-summary-row">
+            <span class="ss-count">8</span>
+            <span class="ss-label">stress zones detected</span>
+            <span class="ss-area">24.1 ac</span>
+          </div>
+
+          <div class="stress-sort-row">
+            <span class="sort-lbl">Sort:</span>
+            <button class="sort-btn">Priority <i class="fas fa-chevron-down"></i></button>
+          </div>
+
+          <div class="ndvi-chart-container" style="padding: 10px; height: 140px; margin-bottom: 10px; border-bottom: 1px solid #333;">
+            <canvas id="ndviTimeSeriesChart"></canvas>
+          </div>
+
+          <div class="stress-list" id="stressList"></div>
+
+          <div class="field-actions" style="margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; border: 1px solid #333;">
+            <h3 style="color: #fff; margin-bottom: 10px; font-size: 14px;"><i class="fas fa-tasks"></i> Field Actions</h3>
+            <input type="file" id="cnnPhotoInput" style="display: none;" accept="image/*" />
+            <button class="tp-btn primary green" id="btnPlantVerify" style="width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <i class="fas fa-camera"></i> Plant & Verify (CNN)
+            </button>
+            <button class="tp-btn primary" id="btnRunAudit" style="width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #38a1ff; color: #fff;">
+              <i class="fas fa-satellite"></i> Run Audit & Payout
+            </button>
+            <button class="tp-btn ghost" id="btnDownloadReport" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; color: #a0a0a0; border: 1px solid #444;">
+              <i class="fas fa-download"></i> Download Report
+            </button>
+          </div>
         </div>
 
-        <div class="stress-meta-row">
-          <span class="sm-label">Data:</span>
-          <button class="sm-date-btn">28 Aug 2024 <i class="fas fa-chevron-down"></i></button>
-          <button class="sm-ndvi-btn">NDVI <i class="fas fa-chevron-down"></i></button>
+        <!-- PANEL 2: AUDIT HISTORY -->
+        <div id="panelAudit" class="fa-subpanel" style="display:none;">
+          <div class="fap-header">
+            <h2 class="stress-title">Audit History</h2>
+          </div>
+          <div style="padding:10px; color:#ccc; font-size:13px;">
+            <p style="margin-bottom:15px;">Recent VM0047 Audits anchored to Hedera HCS.</p>
+            <div id="auditHistoryList" style="display:flex; flex-direction:column; gap:10px;">
+              <!-- JS will inject here -->
+            </div>
+          </div>
         </div>
 
-        <div class="stress-summary-row">
-          <span class="ss-count">8</span>
-          <span class="ss-label">stress zones detected</span>
-          <span class="ss-area">24.1 ac</span>
-        </div>
-
-        <div class="stress-sort-row">
-          <span class="sort-lbl">Sort:</span>
-          <button class="sort-btn">Priority <i class="fas fa-chevron-down"></i></button>
-        </div>
-
-        <!-- ── NEW: NDVI TIME-SERIES CHART ── -->
-        <div class="ndvi-chart-container" style="padding: 10px; height: 140px; margin-bottom: 10px; border-bottom: 1px solid #333;">
-          <canvas id="ndviTimeSeriesChart"></canvas>
-        </div>
-
-        <div class="stress-list" id="stressList">
-          <!-- injected by JS -->
-        </div>
-
-        <!-- ── NEW: FIELD ACTIONS ── -->
-        <div class="field-actions" style="margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; border: 1px solid #333;">
-          <h3 style="color: #fff; margin-bottom: 10px; font-size: 14px;"><i class="fas fa-tasks"></i> Field Actions</h3>
-          <input type="file" id="cnnPhotoInput" style="display: none;" accept="image/*" />
-          <button class="tp-btn primary green" id="btnPlantVerify" style="width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <i class="fas fa-camera"></i> Plant & Verify (CNN)
-          </button>
-          <button class="tp-btn primary" id="btnRunAudit" style="width: 100%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #38a1ff; color: #fff;">
-            <i class="fas fa-satellite"></i> Run Audit & Payout
-          </button>
-          <button class="tp-btn ghost" id="btnDownloadReport" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; color: #a0a0a0; border: 1px solid #444;">
-            <i class="fas fa-download"></i> Download Report
-          </button>
+        <!-- PANEL 3: FINANCIALS -->
+        <div id="panelFinancials" class="fa-subpanel" style="display:none;">
+          <div class="fap-header">
+            <h2 class="stress-title">Financials</h2>
+          </div>
+          <div style="padding:10px; color:#ccc; font-size:13px;">
+            <p style="margin-bottom:15px;">Recent M-Pesa Payouts (Daraja B2C).</p>
+            <div id="financialsList" style="display:flex; flex-direction:column; gap:10px;">
+              <!-- JS will inject here -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -497,6 +554,23 @@
 
 <!-- Toast container -->
 <div id="mapToast" class="map-toast" style="display:none"></div>
+
+<!-- Farm Registration Modal -->
+<div class="tool-panel-overlay" id="farmModalOverlay" style="z-index: 9000;"></div>
+<div class="auth-modal" id="farmRegistrationModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9001; background:#1A1A1A; width:400px; padding:20px; border-radius:8px; border:1px solid #333;">
+  <div class="auth-header">
+    <div class="auth-title"><i class="fas fa-leaf"></i> Register Farm Zone</div>
+    <button class="auth-close" id="frmClose"><i class="fas fa-times"></i></button>
+  </div>
+  <div style="margin-bottom:15px;">
+    <label style="display:block; margin-bottom:5px; color:#ccc; font-size:13px;">Zone Name</label>
+    <input type="text" id="frmName" placeholder="e.g. Kakamega Block 4" style="width:100%; padding:10px; background:#111; border:1px solid #333; color:#fff; border-radius:4px; outline:none;" />
+  </div>
+  <div style="margin-bottom:15px; color:#a0a0a0; font-size:13px;">
+    <p>Calculated Area: <strong id="frmArea" style="color:#7EC843;">0.00 ha</strong></p>
+  </div>
+  <button id="frmRegisterBtn" style="width:100%; padding:10px; background:#7EC843; color:#000; font-weight:600; border:none; border-radius:4px; cursor:pointer;">Confirm Registration</button>
+</div>
 
 <script src="map.js"></script>
 </body>
