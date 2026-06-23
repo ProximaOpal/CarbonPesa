@@ -251,8 +251,18 @@
             </button>
             <button class="cell-btn" title="Expand"><i class="fas fa-expand-alt"></i></button>
           </div>
-          <canvas id="thermalCanvas" class="thermal-canvas"></canvas>
-          <div class="thermal-label">NDVI Live — Mau Forest Zone MF-429A</div>
+          <div id="thermalMap" style="width: 100%; height: calc(100% - 30px); position: relative; z-index: 1;"></div>
+          <div style="position: absolute; bottom: 10px; left: 10px; z-index: 1000;">
+            <select id="thermalMapLayerSelect" style="background: #222; color: #fff; border: 1px solid #444; padding: 4px; border-radius: 4px; font-family: Outfit;">
+              <option value="ndvi">Real NDVI (Live)</option>
+              <option value="heat">Heat Maps</option>
+              <option value="scope">Scope-Based Corporate Heatmaps</option>
+              <option value="supply">Supply Chain & Flow Maps</option>
+              <option value="baseline">Baseline Carbon Stock Maps</option>
+              <option value="lulc">LULC Change Detection</option>
+              <option value="emissions">Emissions Scenario Maps</option>
+            </select>
+          </div>
         </div>
 
         <!-- CELL 3: Satellite sub-map -->

@@ -3,7 +3,7 @@
 // =====================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API_BASE = "http://localhost:8000";
+  const API_BASE = "https://carbonpesa-4.onrender.com";
   let activeFarmId = 1;
 
   // ───────────────────────────────────────────────────────────────────
@@ -815,59 +815,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  // Thermal Canvas Animation (Mock NDVI heat camera)
-  const canvas = document.getElementById('thermalCanvas');
-  const ctx = canvas.getContext('2d');
-  let cw, ch;
+  // Real Map Layers replacing the thermal canvas
+  const thermalMap = L.map('thermalMap', {
+    center: defaultCenter,
+    zoom: defaultZoom - 1,
+    zoomControl: false,
+    attributionControl: false
+  });
+  L.control.zoom({ position: 'topright' }).addTo(thermalMap);
   
-  function resizeCanvas() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-    cw = canvas.width; ch = canvas.height;
+  // Base satellite layer
+  const baseSatellite = L.tileLayer(mapboxUrl, { maxZoom: 19 }).addTo(thermalMap);
+  
+  const thermalLayers = {
+    ndvi: L.featureGroup([
+        L.polygon([[-0.501, 35.414], [-0.505, 35.412], [-0.506, 35.417]], {color: '#7EC843', fillColor: '#7EC843', fillOpacity: 0.4}),
+        L.polygon([[-0.500, 35.410], [-0.502, 35.408], [-0.504, 35.411]], {color: '#ff9900', fillColor: '#ff9900', fillOpacity: 0.5})
+    ]),
+    heat: typeof L.heatLayer !== 'undefined' ? L.heatLayer([
+        [-0.5023, 35.4156, 0.9], [-0.503, 35.416, 0.6], [-0.501, 35.414, 0.8]
+    ], {radius: 35, blur: 15, maxZoom: 16, gradient: {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red'}}) : L.featureGroup(),
+    scope: typeof L.heatLayer !== 'undefined' ? L.heatLayer([
+        [-0.504, 35.417, 1.0], [-0.505, 35.412, 0.8]
+    ], {radius: 50, blur: 20, maxZoom: 16, gradient: {0.5: 'purple', 1.0: 'red'}}) : L.featureGroup(),
+    supply: L.polyline([[-0.502, 35.415], [-0.508, 35.420], [-0.515, 35.425]], {color: '#38a1ff', weight: 4, dashArray: '5, 10'}),
+    baseline: L.polygon([[-0.500, 35.410], [-0.500, 35.420], [-0.510, 35.420], [-0.510, 35.410]], {color: '#005b96', fillOpacity: 0.6}),
+    lulc: L.featureGroup([
+        L.polygon([[-0.501, 35.414], [-0.502, 35.416], [-0.503, 35.414]], {color: '#ff4d4d', fillColor: '#ff4d4d', fillOpacity: 0.5}).bindPopup('Deforestation Tracked'),
+        L.polygon([[-0.505, 35.412], [-0.506, 35.415], [-0.507, 35.412]], {color: '#7EC843', fillColor: '#7EC843', fillOpacity: 0.5}).bindPopup('Afforestation')
+    ]),
+    emissions: L.circle([-0.5023, 35.4156], {radius: 500, color: '#f39c12', fillColor: '#f39c12', fillOpacity: 0.3}).bindPopup('Projected Reduction Area')
+  };
+  
+  let currentThermalLayer = thermalLayers.ndvi;
+  currentThermalLayer.addTo(thermalMap);
+
+  const thermalSelect = document.getElementById('thermalMapLayerSelect');
+  if (thermalSelect) {
+      thermalSelect.addEventListener('change', (e) => {
+          thermalMap.removeLayer(currentThermalLayer);
+          currentThermalLayer = thermalLayers[e.target.value] || thermalLayers.ndvi;
+          currentThermalLayer.addTo(thermalMap);
+          if (currentThermalLayer.getBounds && typeof currentThermalLayer.getBounds === 'function') {
+              try { thermalMap.fitBounds(currentThermalLayer.getBounds(), {padding: [20,20]}); } catch(err){}
+          }
+      });
   }
-  window.addEventListener('resize', resizeCanvas);
-  // initial delay to ensure DOM sizing
-  setTimeout(() => { resizeCanvas(); drawThermal(); }, 500);
 
-  let time = 0;
-  function drawThermal() {
-    if(!cw || !ch) return requestAnimationFrame(drawThermal);
-    
-    // Base gradient
-    const grd = ctx.createLinearGradient(0, 0, cw, ch);
-    grd.addColorStop(0, "#00204a"); // cool
-    grd.addColorStop(0.5, "#005b96");
-    grd.addColorStop(1, "#b3cde0");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, cw, ch);
-
-    // Animated "heat" blobs representing carbon density
-    ctx.globalCompositeOperation = 'screen';
-    for(let i=0; i<4; i++) {
-      const x = cw/2 + Math.sin(time*0.02 + i)*50;
-      const y = ch/2 + Math.cos(time*0.03 + i)*30;
-      const r = 40 + Math.sin(time*0.05 + i)*10;
-      
-      const rad = ctx.createRadialGradient(x, y, 0, x, y, r);
-      rad.addColorStop(0, i===0 ? 'rgba(255,50,50,0.8)' : 'rgba(126,200,67,0.8)'); // Red = deforestation, Green = healthy
-      rad.addColorStop(1, 'rgba(0,0,0,0)');
-      
-      ctx.fillStyle = rad;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI*2);
-      ctx.fill();
-    }
-    ctx.globalCompositeOperation = 'source-over';
-
-    // Scanline effect
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    const scanY = (time * 2) % ch;
-    ctx.fillRect(0, scanY, cw, 2);
-
-    time++;
-    requestAnimationFrame(drawThermal);
-  }
+  // Also sync size when expanding
+  auditMap.on('resize', () => {
+      setTimeout(() => thermalMap.invalidateSize(), 100);
+  });
+  
+  // Ensure expanding cell invalidates map size
+  document.querySelectorAll('.cell-btn[title="Expand"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(() => thermalMap.invalidateSize(), 300);
+    });
+  });
 
   // Toast Helper
   function showToast(msg) {

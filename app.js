@@ -61,7 +61,7 @@ function animateCounters() {
 
   if (odoCarbon && odoPayout) {
     // Initial fetch
-    fetch("http://localhost:8000/stats/dashboard")
+    fetch("https://carbonpesa-4.onrender.com/stats/dashboard")
       .then(res => res.json())
       .then(data => {
         odoCarbon.innerHTML = data.total_tco2e_sequestered;
@@ -70,7 +70,7 @@ function animateCounters() {
 
     // Live polling every 10 seconds
     setInterval(() => {
-      fetch("http://localhost:8000/stats/dashboard")
+      fetch("https://carbonpesa-4.onrender.com/stats/dashboard")
         .then(res => res.json())
         .then(data => {
           odoCarbon.innerHTML = data.total_tco2e_sequestered;

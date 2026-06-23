@@ -294,7 +294,7 @@
     }
     
     function fetchLivePrice() {
-      fetch("http://localhost:8000/stats/dashboard")
+      fetch("https://carbonpesa-4.onrender.com/stats/dashboard")
         .then(res => res.json())
         .then(data => {
           const currentPrice = data.spot_price_usd || (lastPrice + (Math.random()-0.5));
