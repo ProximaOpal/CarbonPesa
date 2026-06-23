@@ -629,10 +629,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const title = btn.getAttribute('title');
       const targetPanelId = subPanels[title] || 'panelStress';
       
-      document.querySelectorAll('.fa-subpanel').forEach(p => p.style.display = 'none');
+      document.querySelectorAll('.fa-subpanel').forEach(p => {
+        p.style.display = 'none';
+        p.classList.remove('active');
+      });
       const tp = document.getElementById(targetPanelId);
       if (tp) {
-          tp.style.display = 'block';
+          tp.style.display = 'flex';
+          tp.classList.add('active');
           if(targetPanelId === 'panelAudit') fetchAuditHistory();
           if(targetPanelId === 'panelFinancials') fetchFinancials();
       }
@@ -827,24 +831,40 @@ document.addEventListener('DOMContentLoaded', () => {
   // Base satellite layer
   const baseSatellite = L.tileLayer(mapboxUrl, { maxZoom: 19 }).addTo(thermalMap);
   
+  function generateDenseHeatmap(centerLat, centerLng, radiusDegrees, count, colorScheme) {
+      if (typeof L.heatLayer === 'undefined') return L.featureGroup();
+      const points = [];
+      for (let i = 0; i < count; i++) {
+          const lat = centerLat + (Math.random() - 0.5) * radiusDegrees;
+          const lng = centerLng + (Math.random() - 0.5) * radiusDegrees;
+          // Intensity based on some clustered logic for realism
+          const dist1 = Math.sqrt(Math.pow(lat - centerLat, 2) + Math.pow(lng - centerLng, 2));
+          const dist2 = Math.sqrt(Math.pow(lat - (centerLat + 0.005), 2) + Math.pow(lng - (centerLng - 0.005), 2));
+          let intensity = 1.0 - (Math.min(dist1, dist2) / (radiusDegrees / 2.5));
+          intensity += (Math.random() * 0.4 - 0.2); // noise
+          intensity = Math.max(0.1, Math.min(1.0, intensity));
+          points.push([lat, lng, intensity]);
+      }
+      return L.heatLayer(points, {
+          radius: 20, 
+          blur: 15, 
+          maxZoom: 16, 
+          gradient: colorScheme
+      });
+  }
+
   const thermalLayers = {
-    ndvi: L.featureGroup([
-        L.polygon([[-0.501, 35.414], [-0.505, 35.412], [-0.506, 35.417]], {color: '#7EC843', fillColor: '#7EC843', fillOpacity: 0.4}),
-        L.polygon([[-0.500, 35.410], [-0.502, 35.408], [-0.504, 35.411]], {color: '#ff9900', fillColor: '#ff9900', fillOpacity: 0.5})
+    ndvi: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.025, 1200, {0.2: 'red', 0.4: 'yellow', 0.7: 'lime', 1.0: '#00ff00'}),
+    heat: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.03, 1500, {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red'}),
+    scope: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.015, 800, {0.4: 'purple', 0.8: 'orange', 1.0: 'red'}),
+    supply: L.featureGroup([
+        L.polyline([[-0.502, 35.415], [-0.508, 35.420], [-0.515, 35.425], [-0.520, 35.410]], {color: '#ff4d4d', weight: 6, opacity: 0.8}),
+        generateDenseHeatmap(-0.508, 35.420, 0.005, 300, {0.5: 'orange', 1.0: 'red'}),
+        generateDenseHeatmap(-0.515, 35.425, 0.005, 300, {0.5: 'orange', 1.0: 'red'})
     ]),
-    heat: typeof L.heatLayer !== 'undefined' ? L.heatLayer([
-        [-0.5023, 35.4156, 0.9], [-0.503, 35.416, 0.6], [-0.501, 35.414, 0.8]
-    ], {radius: 35, blur: 15, maxZoom: 16, gradient: {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red'}}) : L.featureGroup(),
-    scope: typeof L.heatLayer !== 'undefined' ? L.heatLayer([
-        [-0.504, 35.417, 1.0], [-0.505, 35.412, 0.8]
-    ], {radius: 50, blur: 20, maxZoom: 16, gradient: {0.5: 'purple', 1.0: 'red'}}) : L.featureGroup(),
-    supply: L.polyline([[-0.502, 35.415], [-0.508, 35.420], [-0.515, 35.425]], {color: '#38a1ff', weight: 4, dashArray: '5, 10'}),
-    baseline: L.polygon([[-0.500, 35.410], [-0.500, 35.420], [-0.510, 35.420], [-0.510, 35.410]], {color: '#005b96', fillOpacity: 0.6}),
-    lulc: L.featureGroup([
-        L.polygon([[-0.501, 35.414], [-0.502, 35.416], [-0.503, 35.414]], {color: '#ff4d4d', fillColor: '#ff4d4d', fillOpacity: 0.5}).bindPopup('Deforestation Tracked'),
-        L.polygon([[-0.505, 35.412], [-0.506, 35.415], [-0.507, 35.412]], {color: '#7EC843', fillColor: '#7EC843', fillOpacity: 0.5}).bindPopup('Afforestation')
-    ]),
-    emissions: L.circle([-0.5023, 35.4156], {radius: 500, color: '#f39c12', fillColor: '#f39c12', fillOpacity: 0.3}).bindPopup('Projected Reduction Area')
+    baseline: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.04, 2000, {0.2: '#b3cde0', 0.5: '#005b96', 1.0: '#03396c'}),
+    lulc: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.025, 1000, {0.3: 'yellow', 0.6: 'orange', 1.0: '#8b4513'}),
+    emissions: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.035, 1400, {0.4: 'yellow', 0.7: 'red', 1.0: 'black'})
   };
   
   let currentThermalLayer = thermalLayers.ndvi;
@@ -1215,20 +1235,22 @@ document.addEventListener('DOMContentLoaded', () => {
       updateAuditSubtabs(stabMap);
       if (auditLeft) { auditLeft.style.display = 'flex'; auditLeft.style.flex = '1'; }
       if (auditRight) auditRight.style.display = 'none';
+      setTimeout(() => auditMap.invalidateSize(), 100);
     });
   }
   if (stabData) {
     stabData.addEventListener('click', () => {
       updateAuditSubtabs(stabData);
       if (auditLeft) auditLeft.style.display = 'none';
-      if (auditRight) { auditRight.style.display = 'grid'; auditRight.style.flex = '1'; }
+      if (auditRight) { auditRight.style.display = 'block'; auditRight.style.flex = '1'; }
     });
   }
   if (stabSplit) {
     stabSplit.addEventListener('click', () => {
       updateAuditSubtabs(stabSplit);
       if (auditLeft) { auditLeft.style.display = 'flex'; auditLeft.style.flex = '1.2'; }
-      if (auditRight) { auditRight.style.display = 'grid'; auditRight.style.flex = '1'; }
+      if (auditRight) { auditRight.style.display = 'block'; auditRight.style.flex = '1'; }
+      setTimeout(() => auditMap.invalidateSize(), 100);
     });
   }
 
